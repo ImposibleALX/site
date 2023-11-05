@@ -1,0 +1,67 @@
+@font-face {
+    font-family: 'TNRMTCB';
+    src: url('fonts/TNRMTCondensedBold.otf') format('opentype');
+    /* Puedes especificar otros formatos de fuente aquí si lo deseas */
+}
+
+* {
+    background-color: #000; /* Fondo negro para toda la página */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#encabezado {
+    position: relative; /* Cambiar a posición relativa */
+    padding: 20px;
+}
+
+#encabezado h1 {
+    color: #FFFFFF;
+    font-size: 40px;
+    font-family: 'TNRMTCB', arial;
+    text-decoration: underline;
+    /* Elimina las propiedades position, top y left */
+}
+
+.container {
+    width: 100%;
+    padding: 2px;
+    border: 2px solid white;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    max-width: calc(100% - 8px); /* Ten en cuenta el ancho del borde y el margen */
+}
+
+#title {
+    flex: 1;
+}
+
+.title-text {
+    color: white;
+    font-family: 'TNRMTCB';
+    margin: 2px; /* Agregamos un margen de 2px alrededor del texto */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
