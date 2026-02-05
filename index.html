@@ -1,22 +1,1065 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="css/main.css">
-    <title>All-Evangelion</title>
+    <title>Sensor & Lock Mechanics Sandbox</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --panel-bg: #161b22;
+            --text-main: #c9d1d9;
+            --text-dim: #8b949e;
+            --accent: #58a6ff;
+            --danger: #f85149;
+            --warning: #d29922;
+            --success: #3fb950;
+            --border: #30363d;
+            --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Layout */
+        header {
+            height: 40px;
+            background: var(--panel-bg);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+            justify-content: space-between;
+        }
+
+        h1 { font-size: 14px; margin: 0; font-weight: 600; color: var(--accent); letter-spacing: 0.5px; }
+
+        #workspace {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Canvas Area */
+        #viewport {
+            flex: 1;
+            position: relative;
+            background-color: var(--bg-color);
+            cursor: crosshair;
+            overflow: hidden;
+        }
+
+        canvas { display: block; }
+
+        #overlay-ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            pointer-events: none;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--success);
+            text-shadow: 0 1px 2px black;
+        }
+
+        /* Controls Sidebar */
+        #controls {
+            width: 380px;
+            background: var(--panel-bg);
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+
+        .panel-section {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .panel-title {
+            font-weight: bold;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            font-size: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Widgets */
+        .control-group {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        label { color: var(--text-main); flex: 1; margin-right: 10px; white-space: nowrap; }
+        
+        input[type="range"] {
+            flex: 2;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            appearance: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .val-display { width: 45px; text-align: right; color: var(--accent); font-family: var(--font-mono); }
+
+        button {
+            background: var(--border);
+            color: var(--text-main);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: background 0.2s;
+        }
+        button:hover { background: #3c444d; }
+        button.primary { background: var(--success); color: white; border: none; }
+        button.danger { background: var(--danger); color: white; border: none; }
+        
+        /* Active Mode Button Style */
+        button.mode-active {
+            background: var(--accent);
+            color: #0d1117;
+            border-color: var(--accent);
+            font-weight: bold;
+        }
+
+        /* Logs */
+        #log-panel {
+            flex: 1;
+            background: #000;
+            font-family: var(--font-mono);
+            padding: 5px;
+            overflow-y: auto;
+            font-size: 10px;
+            border-top: 1px solid var(--border);
+            max-height: 200px;
+            min-height: 100px;
+        }
+        .log-entry { margin-bottom: 2px; border-bottom: 1px solid #111; padding-bottom: 2px; }
+        .log-time { color: var(--text-dim); margin-right: 5px; }
+        .log-type-INFO { color: var(--accent); }
+        .log-type-LOCK { color: var(--warning); }
+        .log-type-WARN { color: var(--danger); }
+
+        /* Modal/Assumptions */
+        .modal {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 20px;
+            border-radius: 6px;
+        }
+        .modal-header { font-size: 16px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;}
+        .assumption-list li { margin-bottom: 5px; color: var(--text-dim); }
+        
+        /* Utility classes */
+        .flex-row { display: flex; gap: 5px; }
+        .active-entity { border-left: 3px solid var(--accent); background: rgba(88, 166, 255, 0.1); }
+        
+        /* Entity List */
+        #entity-list { max-height: 150px; overflow-y: auto; }
+        .entity-item { 
+            padding: 4px; border-bottom: 1px solid var(--border); 
+            cursor: pointer; display: flex; justify-content: space-between;
+        }
+        .entity-item:hover { background: rgba(255,255,255,0.05); }
+
+    </style>
 </head>
 <body>
-    <header id="encabezado">
-        <h1>EVANGELION 1995-2021</h1>
-    </header>
-    <main>
-        <div class="container">
-            <article id="title">
-                <h1 class="title-text">NEON GENESIS EVANGELION</h1>
-            </article>
-        </div>        
-    </main>    
+
+<header>
+    <div style="display:flex; align-items:center; gap:15px;">
+        <h1>SENSORY & LOCK DOSSIER TESTBED</h1>
+        <div class="flex-row">
+            <button id="btn-play">Pause</button>
+            <button id="btn-step">Step</button>
+            <button id="btn-reset">Reset</button>
+        </div>
+    </div>
+    <div class="flex-row">
+        <button id="btn-assumptions">Assumptions</button>
+        <button id="btn-export">Export Preset</button>
+    </div>
+</header>
+
+<div id="workspace">
+    <div id="viewport">
+        <canvas id="sim-canvas"></canvas>
+        <div id="overlay-ui">
+            <div>OBSERVER: <span id="hud-obs-state">ACTIVE</span></div>
+            <div>CONTACTS: <span id="hud-contacts">0</span></div>
+            <div>LOCK: <span id="hud-lock-status">NONE</span></div>
+        </div>
+    </div>
+
+    <div id="controls">
+        
+        <!-- Observer Radar Mode Controls (Requested Feature) -->
+        <div class="panel-section">
+            <div class="panel-title">Observer Radar Mode</div>
+            <div class="flex-row" id="radar-mode-group">
+                <button id="btn-radar-active" style="flex:1">Active</button>
+                <button id="btn-radar-passive" style="flex:1">Passive</button>
+                <button id="btn-radar-off" style="flex:1">Off</button>
+            </div>
+        </div>
+
+        <!-- Global Tunables -->
+        <div class="panel-section">
+            <div class="panel-title">Signature Parameters</div>
+            <div id="params-sig-container"></div>
+        </div>
+
+        <div class="panel-section">
+            <div class="panel-title">Detection & Noise</div>
+            <div id="params-det-container"></div>
+        </div>
+
+        <div class="panel-section">
+            <div class="panel-title">Tracking & Lock</div>
+            <div id="params-lock-container"></div>
+        </div>
+
+        <!-- Entity Management -->
+        <div class="panel-section">
+            <div class="panel-title">
+                <span>Simulation Entities</span>
+                <button id="btn-spawn" class="primary">+ Target</button>
+            </div>
+            <div id="entity-list"></div>
+        </div>
+
+        <!-- Selection Properties -->
+        <div class="panel-section" id="selection-panel" style="display:none;">
+            <div class="panel-title">Target Properties (ID: <span id="sel-id"></span>)</div>
+            <div class="control-group">
+                <label>Velocity (m/s)</label>
+                <input type="range" id="sel-vel" min="0" max="1000" step="10">
+                <span class="val-display" id="val-sel-vel">0</span>
+            </div>
+            <div class="control-group">
+                <label>Heading</label>
+                <input type="range" id="sel-head" min="0" max="360" step="1">
+                <span class="val-display" id="val-sel-head">0</span>
+            </div>
+            <div class="control-group">
+                <label>Heat</label>
+                <input type="range" id="sel-heat" min="0" max="100" step="1">
+                <span class="val-display" id="val-sel-heat">0</span>
+            </div>
+            <div class="control-group">
+                <label>Damage (HP)</label>
+                <input type="range" id="sel-dmg" min="0" max="5000" step="50">
+                <span class="val-display" id="val-sel-dmg">0</span>
+            </div>
+            <div class="control-group">
+                <label>ECM Power</label>
+                <input type="range" id="sel-ecm" min="0" max="20" step="0.5">
+                <span class="val-display" id="val-sel-ecm">0</span>
+            </div>
+             <div class="control-group">
+                <label>Size Class</label>
+                <select id="sel-class" style="background:var(--bg-color); color:white; border:1px solid var(--border);">
+                    <option value="corvette">Corvette</option>
+                    <option value="frigate">Frigate</option>
+                    <option value="destroyer">Destroyer</option>
+                    <option value="cruiser">Cruiser</option>
+                    <option value="capital">Capital</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="log-panel"></div>
+    </div>
+</div>
+
+<!-- Assumptions Modal -->
+<div id="modal-assumptions" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">Engineering Assumptions & Defaults</div>
+        <ul class="assumption-list">
+            <li><strong>2D Projection:</strong> The 3D mechanics described in the dossier are projected onto a 2D plane (Z-axis = 0) for visualization purposes.</li>
+            <li><strong>Scale:</strong> 1 pixel ≈ 100 meters. Visual inputs are scaled for usability (ships are drawn larger than physics size).</li>
+            <li><strong>Observer:</strong> The "Player" ship is a Frigate class with standard sensor suite unless modified.</li>
+            <li><strong>Time Step:</strong> Simulation runs at a fixed delta of 16.6ms (60Hz) relative to simulation speed.</li>
+            <li><strong>Formula Implementation:</strong> Formulas are implemented exactly as defined in Section 2 of the dossier, including clamping and exponential factors.</li>
+            <li><strong>Reconciliation:</strong> Where tuning values were "inferred" in the dossier, the default tunable value is set to the recommended dossier value.</li>
+            <li><strong>Light Speed:</strong> Light-speed weapons are treated as hitscan (instant); their velocity does not contribute to signature.</li>
+            <li><strong>Observer Radar:</strong> "Passive" mode (0.5x multiplier) is a UI utility choice, not strictly defined in corpus. Active uses 1.0x, Off uses 0.0x.</li>
+        </ul>
+        <div style="text-align:right; margin-top:20px;">
+            <button onclick="document.getElementById('modal-assumptions').style.display='none'">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+/**
+ * SIMULATION ENGINE
+ * Implements the mathematical framework from the Technical Dossier.
+ */
+
+// --- CONFIGURATION & TUNABLES (Derived from Dossier Section 3) ---
+const CONFIG = {
+    // Signature
+    SPEED_EXP: { val: 1.8, min: 1.0, max: 3.0, step: 0.1, name: "Speed Exponent" },
+    SPEED_SCALE: { val: 100.0, min: 10, max: 500, step: 10, name: "Speed Scale (m/s)" },
+    VELOCITY_WEIGHT: { val: 2.5, min: 0.1, max: 10.0, step: 0.1, name: "Velocity Weight" },
+    HEAT_FACTOR: { val: 0.015, min: 0.001, max: 0.1, step: 0.001, name: "Heat Factor" },
+    DAMAGE_FACTOR: { val: 0.005, min: 0.001, max: 0.05, step: 0.001, name: "Damage Factor" },
+    BASE_SIG: { val: 20.0, min: 1.0, max: 200.0, step: 1.0, name: "Base Signature" },
+    IDLE_MULT: { val: 0.4, min: 0.1, max: 1.0, step: 0.05, name: "Idle Multiplier" },
+    
+    // Detection
+    SENSOR_STRENGTH: { val: 100000000, min: 1000000, max: 500000000, step: 1000000, name: "Sensor Strength" }, // 1.0e8 baseline
+    NOISE_FLOOR_BASE: { val: 0.01, min: 0.001, max: 0.1, step: 0.001, name: "Base Noise Floor" },
+    ENV_DENSITY: { val: 0, min: 0, max: 100, step: 1, name: "Local Obj Density" }, // Objects/km2
+    DETECT_THRESH: { val: 1.5, min: 1.0, max: 5.0, step: 0.1, name: "Detect Threshold" },
+    
+    // Tracking & Lock
+    MAX_ANG_VEL: { val: 0.05, min: 0.01, max: 0.2, step: 0.01, name: "Max Track AngVel (rad/s)" },
+    BREAK_ANGLE: { val: 45, min: 10, max: 180, step: 5, name: "Break Angle (deg)" },
+    ECM_SCALE: { val: 0.05, min: 0.01, max: 0.2, step: 0.01, name: "ECM Scale" },
+    LOCK_GAIN: { val: 0.8, min: 0.1, max: 5.0, step: 0.1, name: "Lock Gain (/s)" },
+    LOCK_DECAY: { val: 0.5, min: 0.1, max: 5.0, step: 0.1, name: "Lock Decay (/s)" },
+    CLUSTER_RAD: { val: 5000, min: 100, max: 20000, step: 100, name: "Cluster Radius (m)" }
+};
+
+// Size Class Coherence Multipliers
+const SIZE_COHERENCE = {
+    corvette: 0.8,
+    frigate: 0.9,
+    destroyer: 1.0,
+    cruiser: 1.1,
+    capital: 1.3
+};
+
+// --- UTILS ---
+const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+const rad = (deg) => deg * (Math.PI / 180);
+const deg = (rad) => rad * (180 / Math.PI);
+const distSq = (p1, p2) => (p1.x - p2.x)**2 + (p1.y - p2.y)**2;
+const dist = (p1, p2) => Math.sqrt(distSq(p1, p2));
+
+// --- ENGINE STATE ---
+const STATE = {
+    t: 0,
+    playing: true,
+    speed: 1.0,
+    observer: {
+        x: 0, y: 0,
+        vx: 0, vy: 0,
+        angle: 0, // Facing direction in radians (0 = Up/North in canvas space typically -PI/2)
+        sensorMode: 'Active',
+        detectMult: 1.0 // Default 1.0 for Active
+    },
+    targets: [], // Array of Target objects
+    clusters: [],
+    logs: [],
+    selectedId: null,
+    lockState: {
+        targetId: null,
+        value: 0.0, // 0.0 to 1.5
+        status: 'NONE' // NONE, ACQUIRING, LOCKED
+    }
+};
+
+class Target {
+    constructor(id, x, y) {
+        this.id = id;
+        this.x = x;
+        this.y = y;
+        this.speed = 0; // m/s
+        this.heading = 0; // radians
+        this.maxSpeed = 100; 
+        this.heat = 0;
+        this.damage = 0;
+        this.ecm = 0;
+        this.radar = 'Off';
+        this.sizeClass = 'frigate'; 
+        
+        // Computed values
+        this.signature = 0;
+        this.detected = false;
+        this.signalStr = 0;
+        this.trackQuality = 0;
+    }
+
+    updatePosition(dt) {
+        // Simple kinematic update
+        this.x += Math.cos(this.heading) * this.speed * dt;
+        this.y += Math.sin(this.heading) * this.speed * dt;
+    }
+}
+
+// --- MATHEMATICAL IMPLEMENTATIONS ---
+
+function calculateSignature(target) {
+    // 2.1 Signature Calculation
+    const v = target.speed;
+    const vMax = target.maxSpeed;
+    
+    // Normalized speed factor
+    const speedNorm = clamp(v / (vMax || 1), 0, 2.0);
+    const speedFactor = Math.pow(speedNorm, CONFIG.SPEED_EXP.val) + (v / CONFIG.SPEED_SCALE.val);
+
+    let S = CONFIG.BASE_SIG.val
+          + (CONFIG.VELOCITY_WEIGHT.val * speedFactor)
+          + (CONFIG.HEAT_FACTOR.val * target.heat)
+          + (CONFIG.DAMAGE_FACTOR.val * target.damage)
+          + (target.radar === 'On' ? 5.0 : 0); // Radar emission constant inferred (5.0 from Dossier)
+
+    // Idle Stealth Rule
+    const vIdleThresh = 2.0;
+    const heatIdleThresh = 5.0;
+    
+    if (v < vIdleThresh && target.heat < heatIdleThresh && target.radar === 'Off') {
+        S *= CONFIG.IDLE_MULT.val;
+    }
+
+    return Math.max(0, S);
+}
+
+function calculateDetection(target, distMeters) {
+    // 2.2 Detection & Noise
+    const S = target.signature;
+    
+    // MODIFIED: Incorporate Observer Radar Mode
+    // Active = 1.0, Passive = 0.5 (Design Choice), Off = 0.0
+    const modeMult = (STATE.observer.detectMult !== undefined) ? STATE.observer.detectMult : 1.0;
+    
+    // Apply multiplier to Sensor Power (P) strictly as input scaler
+    const P = CONFIG.SENSOR_STRENGTH.val * modeMult; 
+    
+    // Raw Signal R = (S * P) / d^2
+    const dSq = Math.max(distMeters * distMeters, 1);
+    const R = (S * P) / dSq;
+
+    // Noise Floor
+    // EnvFactor = 1.0 + 0.1 * min(Density, 50)
+    const envFactor = 1.0 + 0.1 * Math.min(CONFIG.ENV_DENSITY.val, 50);
+    const noise = CONFIG.NOISE_FLOOR_BASE.val * envFactor;
+
+    // Detection Rule
+    const detected = R >= (noise * CONFIG.DETECT_THRESH.val);
+
+    return { detected, signal: R, noise };
+}
+
+function calculateTrackingQuality(target, distMeters) {
+    if (!target.detected) return 0;
+
+    // 2.3 Angular Velocity & Tracking
+    // Relative Velocity Vector
+    const relVx = (Math.cos(target.heading) * target.speed) - STATE.observer.vx;
+    const relVy = (Math.sin(target.heading) * target.speed) - STATE.observer.vy;
+
+    // Direction Vector to Target
+    const dx = target.x - STATE.observer.x;
+    const dy = target.y - STATE.observer.y;
+    // Normalize Dir
+    const invDist = 1 / distMeters;
+    const dirX = dx * invDist;
+    const dirY = dy * invDist;
+
+    // Linear Component (Project relative vel onto dir)
+    const dot = (relVx * dirX) + (relVy * dirY);
+    const linVx = dot * dirX;
+    const linVy = dot * dirY;
+
+    // Transversal Component
+    const transVx = relVx - linVx;
+    const transVy = relVy - linVy;
+    const transMag = Math.sqrt(transVx**2 + transVy**2);
+
+    // Angular Velocity (rad/s)
+    const angVel = transMag / distMeters;
+
+    // Angle Off Boresight
+    // Observer Facing Vector
+    const obsFaceX = Math.cos(STATE.observer.angle);
+    const obsFaceY = Math.sin(STATE.observer.angle);
+    // Dot product of Facing vs Direction to Target
+    const faceDotDir = clamp((obsFaceX * dirX) + (obsFaceY * dirY), -1, 1);
+    const angleOffBore = Math.acos(faceDotDir); // Radians
+
+    // Penalties
+    const angPenalty = clamp(angVel / CONFIG.MAX_ANG_VEL.val, 0, 1);
+    const fovPenalty = clamp(angleOffBore / rad(CONFIG.BREAK_ANGLE.val), 0, 1);
+    const ecmPenalty = clamp(target.ecm * CONFIG.ECM_SCALE.val, 0, 0.5);
+
+    // Raw Q
+    const Q_raw = 1 - angPenalty - fovPenalty - ecmPenalty;
+    
+    // Coherence Multiplier
+    const coherence = SIZE_COHERENCE[target.sizeClass] || 1.0;
+    
+    return clamp(Q_raw * coherence, 0, 1.0);
+}
+
+function updateLockDynamics(dt) {
+    // 2.4 Lock Dynamics
+    const lock = STATE.lockState;
+    const target = STATE.targets.find(t => t.id === lock.targetId);
+
+    // If target lost or destroyed
+    if (!target || !target.detected) {
+        lock.value -= CONFIG.LOCK_DECAY.val * dt;
+    } else {
+        const Q = target.trackQuality;
+        const Q_thresh = 0.3; // Hardcoded tunable from dossier
+
+        if (Q > Q_thresh) {
+            lock.value += CONFIG.LOCK_GAIN.val * Q * dt;
+        } else {
+            lock.value -= CONFIG.LOCK_DECAY.val * dt;
+        }
+    }
+
+    // Clamp [0, 1.5]
+    lock.value = clamp(lock.value, 0, 1.5);
+
+    // State Transitions
+    const oldStatus = lock.status;
+    if (lock.value >= 1.0) lock.status = 'LOCKED';
+    else if (lock.value > 0.5) lock.status = 'ACQUIRING';
+    else lock.status = 'NONE';
+
+    if (lock.status !== oldStatus) {
+        log(`Lock State: ${lock.status} on ID ${lock.targetId || 'N/A'}`, 'LOCK');
+    }
+
+    if (lock.status === 'NONE' && lock.value === 0) {
+        lock.targetId = null; // Clear target only when fully decayed
+    }
+}
+
+function updateClustering() {
+    // 2.5 Clustering (Simple Greedy)
+    // Clear clusters
+    STATE.clusters = [];
+    const processed = new Set();
+    const R = CONFIG.CLUSTER_RAD.val;
+
+    for (let i = 0; i < STATE.targets.length; i++) {
+        if (processed.has(i) || !STATE.targets[i].detected) continue;
+
+        const seed = STATE.targets[i];
+        const cluster = {
+            members: [seed],
+            totalSig: seed.signature,
+            x: seed.x * seed.signature,
+            y: seed.y * seed.signature
+        };
+        processed.add(i);
+
+        for (let j = i + 1; j < STATE.targets.length; j++) {
+            if (processed.has(j) || !STATE.targets[j].detected) continue;
+            
+            const other = STATE.targets[j];
+            if (dist(seed, other) <= R) {
+                cluster.members.push(other);
+                cluster.totalSig += other.signature;
+                cluster.x += other.x * other.signature;
+                cluster.y += other.y * other.signature;
+                processed.add(j);
+            }
+        }
+
+        // Centroid
+        cluster.x /= cluster.totalSig;
+        cluster.y /= cluster.totalSig;
+
+        // Compression
+        const count = cluster.members.length;
+        const compression = count === 1 ? 1.0 : 0.85;
+        cluster.displaySig = cluster.totalSig * compression;
+
+        STATE.clusters.push(cluster);
+    }
+}
+
+// --- MAIN LOOP ---
+
+let lastTime = 0;
+function loop(timestamp) {
+    if (!lastTime) lastTime = timestamp;
+    const dtReal = (timestamp - lastTime) / 1000;
+    lastTime = timestamp;
+
+    if (STATE.playing) {
+        // Fixed step simulation
+        const dt = 0.016 * STATE.speed; 
+        
+        // 1. Physics
+        STATE.targets.forEach(t => t.updatePosition(dt));
+
+        // 2. Sensor Calculations
+        STATE.targets.forEach(t => {
+            t.signature = calculateSignature(t);
+            const d = dist(t, STATE.observer);
+            const detResult = calculateDetection(t, d);
+            t.detected = detResult.detected;
+            t.signalStr = detResult.signal;
+            t.trackQuality = calculateTrackingQuality(t, d);
+        });
+
+        // 3. Locking
+        updateLockDynamics(dt);
+
+        // 4. Clustering
+        updateClustering();
+    }
+
+    render();
+    requestAnimationFrame(loop);
+}
+
+// --- RENDERING ---
+
+const canvas = document.getElementById('sim-canvas');
+const ctx = canvas.getContext('2d');
+let camera = { x: 0, y: 0, zoom: 0.05 }; // 0.05px per meter = 20m per px
+
+function resize() {
+    canvas.width = document.getElementById('viewport').clientWidth;
+    canvas.height = document.getElementById('viewport').clientHeight;
+    // Center camera initially
+    if (STATE.t === 0) {
+        camera.x = -canvas.width / (2 * camera.zoom);
+        camera.y = -canvas.height / (2 * camera.zoom);
+    }
+}
+window.addEventListener('resize', resize);
+resize();
+
+// Input handling for canvas (Pan/Zoom/Drag)
+let isDragging = false;
+let lastMouse = { x: 0, y: 0 };
+let dragTarget = null;
+
+canvas.addEventListener('mousedown', e => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const worldX = (mx / camera.zoom) + camera.x;
+    const worldY = (my / camera.zoom) + camera.y;
+
+    // Check click on target
+    let clicked = null;
+    for (let t of STATE.targets) {
+        if (dist({x: worldX, y: worldY}, t) < (20 / camera.zoom)) {
+            clicked = t;
+            break;
+        }
+    }
+
+    if (clicked) {
+        selectTarget(clicked.id);
+        dragTarget = clicked;
+    } else {
+        isDragging = true;
+    }
+    lastMouse = { x: mx, y: my };
+});
+
+canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const dx = (mx - lastMouse.x) / camera.zoom;
+    const dy = (my - lastMouse.y) / camera.zoom;
+
+    if (dragTarget) {
+        dragTarget.x += dx;
+        dragTarget.y += dy;
+        refreshEntityList();
+    } else if (isDragging) {
+        camera.x -= dx;
+        camera.y -= dy;
+    }
+    lastMouse = { x: mx, y: my };
+});
+
+canvas.addEventListener('mouseup', () => { isDragging = false; dragTarget = null; });
+canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    const zoomSpeed = 0.1;
+    const factor = e.deltaY > 0 ? (1 - zoomSpeed) : (1 + zoomSpeed);
+    camera.zoom *= factor;
+});
+
+function render() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Grid
+    const gridSize = 1000; // 1km grid
+    const screenGrid = gridSize * camera.zoom;
+    const offX = -(camera.x * camera.zoom) % screenGrid;
+    const offY = -(camera.y * camera.zoom) % screenGrid;
+
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let x = offX; x < canvas.width; x += screenGrid) { ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); }
+    for (let y = offY; y < canvas.height; y += screenGrid) { ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); }
+    ctx.stroke();
+
+    // Transform to world space
+    ctx.save();
+    ctx.translate(-camera.x * camera.zoom, -camera.y * camera.zoom);
+    ctx.scale(camera.zoom, camera.zoom);
+
+    // Draw Observer (Center usually)
+    ctx.save();
+    ctx.translate(STATE.observer.x, STATE.observer.y);
+    ctx.rotate(STATE.observer.angle);
+    
+    // FOV Cone (World Space - reflects actual distance)
+    const fovLen = 2000;
+    const halfFov = rad(CONFIG.BREAK_ANGLE.val);
+    ctx.fillStyle = 'rgba(88, 166, 255, 0.1)';
+    ctx.beginPath(); ctx.moveTo(0,0); 
+    ctx.arc(0, 0, fovLen, -halfFov, halfFov);
+    ctx.lineTo(0,0); ctx.fill();
+    ctx.strokeStyle = 'rgba(88, 166, 255, 0.3)';
+    ctx.stroke();
+
+    // FIXED: Apply inverse scaling for Ship Body so it remains visible at any zoom
+    const iconScale = 1 / camera.zoom;
+    ctx.scale(iconScale, iconScale);
+    
+    // Ship Body
+    ctx.fillStyle = '#58a6ff';
+    ctx.beginPath(); ctx.moveTo(20, 0); ctx.lineTo(-10, 10); ctx.lineTo(-10, -10); ctx.fill();
+    
+    ctx.restore();
+
+    // Draw Targets
+    STATE.targets.forEach(t => {
+        ctx.save();
+        ctx.translate(t.x, t.y);
+        
+        // FIXED: Apply inverse scaling for Targets
+        ctx.scale(iconScale, iconScale);
+
+        // Draw Track Quality Ring if detected (Size is now screen pixels)
+        if (t.detected) {
+            const qPct = t.trackQuality;
+            ctx.beginPath();
+            ctx.arc(0, 0, 40, 0, Math.PI * 2 * qPct);
+            ctx.strokeStyle = `hsl(${qPct * 120}, 100%, 50%)`;
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Signature label
+            ctx.fillStyle = 'rgba(255,255,255,0.7)';
+            ctx.font = "20px monospace";
+            ctx.fillText(`Sig:${t.signature.toFixed(0)}`, 45, -10);
+        } else {
+            // Ghost / Unidentified
+            ctx.strokeStyle = '#333';
+            ctx.beginPath(); ctx.arc(0, 0, 25, 0, Math.PI*2); ctx.stroke();
+        }
+
+        // Draw Ship
+        ctx.rotate(t.heading);
+        ctx.fillStyle = t.id === STATE.selectedId ? '#fff' : (t.detected ? '#f85149' : '#333');
+        ctx.beginPath(); ctx.moveTo(15, 0); ctx.lineTo(-10, 8); ctx.lineTo(-10, -8); ctx.fill();
+
+        // Lock Bracket
+        if (STATE.lockState.targetId === t.id && STATE.lockState.status !== 'NONE') {
+            ctx.strokeStyle = STATE.lockState.status === 'LOCKED' ? '#f85149' : '#d29922';
+            // FIXED: line width constant since we are in screen space
+            ctx.lineWidth = 2; 
+            ctx.beginPath();
+            const sz = 40; // Screen pixels
+            // Corners
+            ctx.moveTo(-sz, -sz+10); ctx.lineTo(-sz, -sz); ctx.lineTo(-sz+10, -sz);
+            ctx.moveTo(sz, -sz+10); ctx.lineTo(sz, -sz); ctx.lineTo(sz-10, -sz);
+            ctx.moveTo(-sz, sz-10); ctx.lineTo(-sz, sz); ctx.lineTo(-sz+10, sz);
+            ctx.moveTo(sz, sz-10); ctx.lineTo(sz, sz); ctx.lineTo(sz-10, sz);
+            ctx.stroke();
+            
+            // Lock Progress Bar
+            if (STATE.lockState.status === 'ACQUIRING') {
+                ctx.fillStyle = '#d29922';
+                ctx.fillRect(-sz, sz + 5, (STATE.lockState.value) * (sz*2), 5);
+            }
+        }
+
+        ctx.restore();
+    });
+
+    // Draw Clusters (Overlay)
+    STATE.clusters.forEach(c => {
+        if (c.members.length > 1) {
+            ctx.save();
+            ctx.translate(c.x, c.y);
+            ctx.strokeStyle = '#3fb950'; // Green for cluster
+            ctx.setLineDash([10, 5]);
+            ctx.beginPath();
+            ctx.arc(0, 0, CONFIG.CLUSTER_RAD.val, 0, Math.PI*2);
+            ctx.stroke();
+            
+            // FIXED: Inverse scale for Cluster Text so it remains readable
+            ctx.scale(iconScale, iconScale);
+            ctx.fillStyle = '#3fb950';
+            ctx.font = "40px monospace";
+            ctx.fillText(`[${c.members.length}]`, -20, 0);
+            ctx.restore();
+        }
+    });
+
+    ctx.restore();
+
+    // HUD Text Updates
+    document.getElementById('hud-contacts').innerText = STATE.targets.filter(t => t.detected).length;
+    const ls = document.getElementById('hud-lock-status');
+    ls.innerText = `${STATE.lockState.status} (${(STATE.lockState.value*100).toFixed(0)}%)`;
+    ls.style.color = STATE.lockState.status === 'LOCKED' ? 'var(--danger)' : (STATE.lockState.status === 'ACQUIRING' ? 'var(--warning)' : 'var(--text-dim)');
+}
+
+
+// --- UI LOGIC ---
+
+function createSlider(containerId, configKey) {
+    const cfg = CONFIG[configKey];
+    const div = document.createElement('div');
+    div.className = 'control-group';
+    div.innerHTML = `
+        <label title="${cfg.name}">${cfg.name}</label>
+        <input type="range" min="${cfg.min}" max="${cfg.max}" step="${cfg.step}" value="${cfg.val}">
+        <span class="val-display">${cfg.val}</span>
+    `;
+    const input = div.querySelector('input');
+    const display = div.querySelector('span');
+    
+    input.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        cfg.val = val;
+        display.innerText = val;
+        log(`Param ${cfg.name} set to ${val}`, 'INFO');
+    });
+
+    document.getElementById(containerId).appendChild(div);
+}
+
+function initUI() {
+    // Populate sliders
+    ['SPEED_EXP', 'SPEED_SCALE', 'VELOCITY_WEIGHT', 'HEAT_FACTOR', 'DAMAGE_FACTOR', 'BASE_SIG', 'IDLE_MULT'].forEach(k => createSlider('params-sig-container', k));
+    ['SENSOR_STRENGTH', 'NOISE_FLOOR_BASE', 'ENV_DENSITY', 'DETECT_THRESH'].forEach(k => createSlider('params-det-container', k));
+    ['MAX_ANG_VEL', 'BREAK_ANGLE', 'ECM_SCALE', 'LOCK_GAIN', 'LOCK_DECAY', 'CLUSTER_RAD'].forEach(k => createSlider('params-lock-container', k));
+
+    // Buttons
+    document.getElementById('btn-play').onclick = function() {
+        STATE.playing = !STATE.playing;
+        this.innerText = STATE.playing ? "Pause" : "Play";
+    };
+    document.getElementById('btn-step').onclick = function() {
+        STATE.playing = false;
+        document.getElementById('btn-play').innerText = "Play";
+        loop(lastTime + 16); // Simulate one frame
+    };
+    document.getElementById('btn-reset').onclick = resetSim;
+    document.getElementById('btn-spawn').onclick = spawnTarget;
+    
+    document.getElementById('btn-assumptions').onclick = () => document.getElementById('modal-assumptions').style.display = 'flex';
+    document.getElementById('modal-assumptions').onclick = (e) => {
+        if(e.target.id === 'modal-assumptions') e.target.style.display = 'none';
+    };
+
+    document.getElementById('btn-export').onclick = () => {
+        const data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(CONFIG, null, 2));
+        const dlAnchorElem = document.createElement('a');
+        dlAnchorElem.setAttribute("href", data);
+        dlAnchorElem.setAttribute("download", "sensor_config_preset.json");
+        dlAnchorElem.click();
+    };
+
+    // Radar Mode Button Logic
+    const setMode = (mode, val, btnId) => {
+        STATE.observer.sensorMode = mode;
+        STATE.observer.detectMult = val;
+        document.getElementById('hud-obs-state').innerText = mode.toUpperCase();
+        
+        // Update visual state of buttons
+        document.querySelectorAll('#radar-mode-group button').forEach(b => b.classList.remove('mode-active'));
+        document.getElementById(btnId).classList.add('mode-active');
+        
+        log(`Observer Radar Mode: ${mode} (Mult: ${val})`, 'INFO');
+    };
+
+    document.getElementById('btn-radar-active').onclick = () => setMode('Active', 1.0, 'btn-radar-active');
+    document.getElementById('btn-radar-passive').onclick = () => setMode('Passive', 0.5, 'btn-radar-passive'); // 0.5 suggested by design
+    document.getElementById('btn-radar-off').onclick = () => setMode('Off', 0.0, 'btn-radar-off');
+
+    // Initialize Active Mode by default
+    setMode('Active', 1.0, 'btn-radar-active');
+
+
+    // Selection UI Bindings
+    bindSelectionInput('sel-vel', 'speed', 'val-sel-vel');
+    bindSelectionInput('sel-head', 'heading', 'val-sel-head', (v) => rad(v)); // deg to rad
+    bindSelectionInput('sel-heat', 'heat', 'val-sel-heat');
+    bindSelectionInput('sel-dmg', 'damage', 'val-sel-dmg');
+    bindSelectionInput('sel-ecm', 'ecm', 'val-sel-ecm');
+    document.getElementById('sel-class').addEventListener('change', (e) => {
+        const t = STATE.targets.find(x => x.id === STATE.selectedId);
+        if (t) t.sizeClass = e.target.value;
+    });
+
+    // Initial Spawn
+    spawnTarget();
+    STATE.targets[0].y = -20000; // Place 20km away
+    
+    loop(0);
+}
+
+function bindSelectionInput(elemId, prop, displayId, transform = (v)=>v) {
+    const el = document.getElementById(elemId);
+    const disp = document.getElementById(displayId);
+    el.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        const t = STATE.targets.find(x => x.id === STATE.selectedId);
+        if (t) {
+            t[prop] = transform(val);
+            disp.innerText = val;
+        }
+    });
+}
+
+function updateSelectionUI() {
+    const t = STATE.targets.find(x => x.id === STATE.selectedId);
+    if (!t) {
+        document.getElementById('selection-panel').style.display = 'none';
+        return;
+    }
+    document.getElementById('selection-panel').style.display = 'block';
+    document.getElementById('sel-id').innerText = t.id;
+    
+    // Update inputs to match target state (inverse transform if needed)
+    document.getElementById('sel-vel').value = t.speed;
+    document.getElementById('val-sel-vel').innerText = t.speed.toFixed(0);
+    
+    const headDeg = deg(t.heading);
+    document.getElementById('sel-head').value = headDeg;
+    document.getElementById('val-sel-head').innerText = headDeg.toFixed(0);
+
+    document.getElementById('sel-heat').value = t.heat;
+    document.getElementById('val-sel-heat').innerText = t.heat;
+
+    document.getElementById('sel-dmg').value = t.damage;
+    document.getElementById('val-sel-dmg').innerText = t.damage;
+
+    document.getElementById('sel-ecm').value = t.ecm;
+    document.getElementById('val-sel-ecm').innerText = t.ecm;
+    
+    document.getElementById('sel-class').value = t.sizeClass;
+}
+
+function spawnTarget() {
+    const id = Date.now();
+    const t = new Target(id, (Math.random()-0.5)*10000, (Math.random()-0.5)*10000 - 15000);
+    // FIXED: Adjusted random velocity to heavier ship standards (50-100)
+    t.speed = 50 + Math.random() * 50; 
+    t.heading = Math.random() * Math.PI * 2;
+    STATE.targets.push(t);
+    refreshEntityList();
+    selectTarget(id);
+    log(`Spawned Target ${id}`, 'INFO');
+}
+
+function resetSim() {
+    STATE.targets = [];
+    STATE.lockState = { targetId: null, value: 0, status: 'NONE' };
+    log('Simulation Reset', 'WARN');
+    refreshEntityList();
+    spawnTarget();
+}
+
+function selectTarget(id) {
+    STATE.selectedId = id;
+    
+    // Auto-lock logic for sandbox testing
+    if (STATE.lockState.targetId !== id) {
+        STATE.lockState.targetId = id;
+        STATE.lockState.value = 0; // Reset lock progress on switch
+        log(`Targeting ID ${id}`, 'INFO');
+    }
+
+    updateSelectionUI();
+    
+    // Highlight in list
+    document.querySelectorAll('.entity-item').forEach(el => el.classList.remove('active-entity'));
+    const item = document.getElementById(`ent-${id}`);
+    if (item) item.classList.add('active-entity');
+}
+
+function refreshEntityList() {
+    const list = document.getElementById('entity-list');
+    list.innerHTML = '';
+    STATE.targets.forEach(t => {
+        const div = document.createElement('div');
+        div.className = `entity-item ${t.id === STATE.selectedId ? 'active-entity' : ''}`;
+        div.id = `ent-${t.id}`;
+        div.innerHTML = `<span>ID: ${t.id}</span> <span>${dist(t, STATE.observer).toFixed(0)}m</span>`;
+        div.onclick = () => selectTarget(t.id);
+        list.appendChild(div);
+    });
+}
+
+function log(msg, type='INFO') {
+    const panel = document.getElementById('log-panel');
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+    const time = new Date().toISOString().substr(11, 8);
+    entry.innerHTML = `<span class="log-time">[${time}]</span><span class="log-type-${type}">${type}</span>: ${msg}`;
+    panel.prepend(entry);
+    if (panel.childNodes.length > 50) panel.lastChild.remove();
+}
+
+// Start
+initUI();
+
+</script>
 </body>
 </html>
