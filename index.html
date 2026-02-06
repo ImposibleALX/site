@@ -246,6 +246,20 @@
         font-style: italic;
     }
 
+    .threat-indicator {
+        position: absolute;
+        top: 50px;
+        left: 10px;
+        background: rgba(248, 81, 73, 0.2);
+        border: 1px solid var(--danger);
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: var(--danger);
+        pointer-events: none;
+    }
+
 </style>
 </head>
 <body>
@@ -273,8 +287,12 @@
 <div id="overlay-ui">
 <div>PLAYER: <span id="hud-player-state">ACTIVE</span></div>
 <div>CONTACTS: <span id="hud-contacts">0</span></div>
-<div>LOCK: <span id="hud-lock-status">NONE (0%)</span></div>
+<div>LOCK OUT: <span id="hud-lock-outgoing">NONE (0%)</span></div>
+<div>LOCK IN: <span id="hud-lock-incoming">NONE</span></div>
 <div style="margin-top: 5px; color: var(--text-dim);" id="hud-selection"></div>
+</div>
+<div id="threat-warning" class="threat-indicator" style="display:none;">
+⚠ INCOMING LOCK DETECTED
 </div>
 </div>
 <div id="controls">
@@ -288,14 +306,12 @@
         </div>
     </div>
 
-    <!-- Player Controls -->
     <div class="panel-section">
         <div class="panel-title">PLAYER CONTROLS</div>
         <div class="control-group">
             <label><span class="tag tag-plr">PLR</span>Ship Type</label>
             <select id="player-ship-type">
-                <!-- Populated by JS -->
-            </select>
+                </select>
         </div>
         <div class="profile-info" id="player-profile-description"></div>
         
@@ -322,39 +338,33 @@
         </div>
     </div>
 
-    <!-- Ship Profile Selection -->
     <div class="panel-section">
         <div class="panel-title">SPAWN DEFAULTS</div>
         <div class="control-group">
             <label><span class="tag tag-sys">SYS</span>Default Ship Type</label>
             <select id="default-ship-profile">
-                <!-- Populated by JS -->
-            </select>
+                </select>
         </div>
         <div class="profile-info" id="profile-description">
             Select a ship profile to see description
         </div>
     </div>
 
-    <!-- Detection System -->
     <div class="panel-section">
         <div class="panel-title">DETECTION SYSTEM</div>
         <div id="params-detection-container"></div>
     </div>
 
-    <!-- Tracking & Lock -->
     <div class="panel-section">
         <div class="panel-title">TRACKING & LOCK</div>
         <div id="params-tracking-container"></div>
     </div>
 
-    <!-- Weapon System -->
     <div class="panel-section">
         <div class="panel-title">WEAPON HIT PROBABILITY</div>
         <div id="params-weapon-container"></div>
     </div>
 
-    <!-- Observer Controls (legacy compatibility) -->
     <div class="panel-section">
         <div class="panel-title">VIEW CONTROLS</div>
         <div class="control-group">
@@ -368,7 +378,6 @@
         </div>
     </div>
 
-    <!-- Entity Management -->
     <div class="panel-section">
         <div class="panel-title">
             ENTITIES
@@ -377,15 +386,13 @@
         <div id="entity-list"></div>
     </div>
 
-    <!-- Selection Panel -->
     <div class="panel-section" id="selection-panel" style="display:none;">
         <div class="panel-title">TARGET <span id="sel-id">---</span></div>
         
         <div class="control-group">
             <label><span class="tag tag-tgt">TGT</span>Ship Type</label>
             <select id="sel-ship-type">
-                <!-- Populated by JS -->
-            </select>
+                </select>
         </div>
 
         <div class="control-group">
@@ -429,17 +436,15 @@
         </div>
     </div>
 
-    <!-- Logs -->
     <div id="log-panel"></div>
 </div>
 </div>
 
-<!-- System Info Modal -->
 <div class="modal" id="modal-assumptions">
 <div class="modal-content">
 <div class="modal-header">Improved Sensor System v3.1</div>
 <p style="color:var(--text-dim); font-size:12px; margin-bottom:10px;">
-Player-centered architecture with debug overlays.
+Player-centered architecture with separated outgoing/incoming lock tracking.
 </p>
 
 <h3 style="color: var(--accent); font-size: 13px; margin-top: 15px;">PLAYER ENTITY</h3>
@@ -448,6 +453,14 @@ Player-centered architecture with debug overlays.
 <li><strong>Observer Compatibility</strong>: Player mirrors STATE.observer for backward compatibility</li>
 <li><strong>Visual Debugging</strong>: Detection rings, weapon range, lock gauge, angular velocity vectors</li>
 <li><strong>Stable IDs</strong>: Incremental counter (no Date.now collision issues)</li>
+</ul>
+
+<h3 style="color: var(--accent); font-size: 13px; margin-top: 15px;">LOCK SYSTEM CLARITY</h3>
+<ul class="assumption-list">
+<li><strong>Outgoing Lock</strong>: Player locking onto selected target (Player → Target)</li>
+<li><strong>Incoming Locks</strong>: Enemy targets locking onto player (Enemy → Player)</li>
+<li><strong>Separate Tracking</strong>: Each lock type tracked independently with own timers</li>
+<li><strong>HUD Display</strong>: "LOCK OUT" shows player's lock, "LOCK IN" shows incoming threats</li>
 </ul>
 
 <h3 style="color: var(--accent); font-size: 13px; margin-top: 15px;">TWO-VALUE SHIP SYSTEM</h3>
@@ -463,6 +476,7 @@ Player-centered architecture with debug overlays.
 <li><strong>Detection Score</strong>: (signature × sensorPower) / (log₁₀(distKm + 1) × 10)</li>
 <li><strong>Natural Falloff</strong>: Doubling distance ≈ 30% signal reduction (realistic)</li>
 <li><strong>Detection Threshold</strong>: Score ≥ 15 for contact (configurable)</li>
+<li><strong>Defensive Math</strong>: Protected against div/0, NaN, and invalid inputs</li>
 </ul>
 
 <h3 style="color: var(--accent); font-size: 13px; margin-top: 15px;">DEBUG OVERLAYS</h3>
@@ -562,13 +576,30 @@ ImprovedSensorMath.SHIP_PROFILES = {
     }
 };
 
-ImprovedSensorMath.getShipProfile = function(shipName) {
-    return ImprovedSensorMath.SHIP_PROFILES[shipName] || {
-        baseSignature: 20,
-        activityGain: 1.5,
-        size: "frigate",
-        description: "Default profile"
-    };
+// ===== getShipProfile (robusta, normalize keys) =====
+ImprovedSensorMath.getShipProfile = function(shipName){
+    // Defensive: handle null/undefined
+    if(!shipName) shipName = '';
+
+    // Normalize lookup: remove spaces, dashes, underscores, lowercase
+    const normalize = s => String(s).replace(/[\s\-_]/g,'').toLowerCase();
+
+    // Build a normalized lookup once (cache on function object)
+    if(!ImprovedSensorMath._profileLookup){
+        ImprovedSensorMath._profileLookup = {};
+        Object.keys(ImprovedSensorMath.SHIP_PROFILES).forEach(k=>{
+            ImprovedSensorMath._profileLookup[ normalize(k) ] = ImprovedSensorMath.SHIP_PROFILES[k];
+        });
+    }
+
+    const found = ImprovedSensorMath._profileLookup[ normalize(shipName) ];
+    if(found) return found;
+
+    // Fallback: try exact key (backwards compat)
+    if(ImprovedSensorMath.SHIP_PROFILES[shipName]) return ImprovedSensorMath.SHIP_PROFILES[shipName];
+
+    // Default profile
+    return { baseSignature: 20, activityGain: 1.5, size: "frigate", description: "Default profile" };
 };
 
 ImprovedSensorMath.getAvailableShipTypes = function() {
@@ -599,16 +630,29 @@ ImprovedSensorMath.computeSignature = function(shipType, activityLevel) {
     return baseSig * (1 + activityBoost);
 };
 
-// Logarithmic detection
-ImprovedSensorMath.computeDetectionScore = function(signature, sensorPower, distanceM) {
-    signature = Math.max(0, signature);
-    sensorPower = Math.max(0, sensorPower);
-    distanceM = Math.max(1, distanceM);
-    
+// ===== computeDetectionScore (defensiva, evita div/0) =====
+// ---- REPLACE computeDetectionScore ----
+ImprovedSensorMath.computeDetectionScore = function(signature, sensorPower, distanceM){
+    // Defensive guards
+    signature = Math.max(0, Number(signature) || 0);
+    sensorPower = Math.max(0, Number(sensorPower) || 0);
+    distanceM = Number(distanceM);
+    if (!isFinite(distanceM) || distanceM <= 0) distanceM = 1;
+
     const distanceKm = distanceM / 1000;
-    const logFactor = Math.log10(distanceKm + 1);
-    const rawScore = (signature * sensorPower) / (logFactor * 10);
-    return ImprovedSensorMath.clamp(rawScore, 0, 100);
+
+    // PARAMETERS you can tune:
+    const detectDecayKm = 25.0; // bigger = detection reaches farther (suggest: 20-40)
+    const detectionScale = 1.0 / 10.0; // scale factor to keep scores in similar 0-100 range
+
+    // Use exponential decay (stable, monotonic, no logs in forward formula)
+    // raw = (signature * sensorPower) * exp(-distanceKm / detectDecayKm)
+    const raw = (signature * sensorPower) * Math.exp(-distanceKm / detectDecayKm);
+
+    // Map into 0..100 (adjust detectionScale to balance values)
+    const score = raw * detectionScale;
+
+    return ImprovedSensorMath.clamp(score, 0, 100);
 };
 
 ImprovedSensorMath.isDetected = function(detectionScore, detectionThreshold) {
@@ -617,16 +661,28 @@ ImprovedSensorMath.isDetected = function(detectionScore, detectionThreshold) {
 };
 
 // Calculate detection range (inverse of detection formula)
+// ---- REPLACE computeDetectionRange (inverse of the new exponential formula) ----
 ImprovedSensorMath.computeDetectionRange = function(signature, sensorPower, threshold) {
+    // threshold is detection score (same units used above)
     if (threshold <= 0 || sensorPower <= 0) return 0;
-    // score = (sig × power) / (log10(distKm + 1) × 10)
-    // log10(distKm + 1) = (sig × power) / (score × 10)
-    // distKm = 10^((sig × power) / (score × 10)) - 1
-    const term = (signature * sensorPower) / (threshold * 10);
-    const distKm = Math.pow(10, term) - 1;
-    return Math.max(0, distKm * 1000); // Return meters
-};
 
+    // Same parameters used above
+    const detectDecayKm = 25.0;
+    const detectionScale = 1.0 / 10.0;
+
+    // threshold = ((signature*sensorPower) * exp(-dKm/D)) * detectionScale
+    // => exp(-dKm/D) = threshold / (signature*sensorPower*detectionScale)
+    const numerator = threshold;
+    const denom = (signature * sensorPower * detectionScale);
+
+    if (denom <= 0) return 0;
+    const ratio = numerator / denom;
+    if (ratio >= 1) return 0; // no possible distance where score >= threshold
+
+    // dKm = -D * ln(ratio)
+    const dKm = -detectDecayKm * Math.log(Math.max(1e-12, ratio));
+    return Math.max(0, dKm * 1000); // meters
+};
 // Angular velocity (preserved from original)
 ImprovedSensorMath.computeAngularVelocity = function(target_pos, target_vel, observer_pos, observer_vel) {
     const delta_x = target_pos.x - observer_pos.x;
@@ -660,34 +716,33 @@ ImprovedSensorMath.computeAngularVelocity = function(target_pos, target_vel, obs
     return [angular_velocity, transversal_speed];
 };
 
-// Simplified lock state
-ImprovedSensorMath.computeLockState = function(detectionScore, angularVelocity, trackingTime, trackingSpeed) {
+// ===== computeLockState (same math but clearer) =====
+ImprovedSensorMath.computeLockState = function(detectionScore, angularVelocity, trackingTime, trackingSpeed){
     trackingSpeed = Math.max(0.01, trackingSpeed || 0.1);
     const LOCK_THRESHOLD = 25;
     const FULL_LOCK_THRESHOLD = 60;
     const MAX_TRACK_TIME = 3.0;
-    
-    if (detectionScore < LOCK_THRESHOLD) {
-        return {state: "NONE", quality: 0};
+
+    if(detectionScore < LOCK_THRESHOLD){
+        return { state: "NONE", quality: 0 };
     }
-    
+
+    // angular velocity penalty (0..1)
     const angVelRatio = Math.min(angularVelocity / trackingSpeed, 1.0);
     const angVelPenalty = angVelRatio * 0.7;
-    
-    const baseQuality = detectionScore / 100;
+
+    // base quality relates to detection score, time increases quality
+    const baseQuality = detectionScore / 100; // 0..1
     const timeFactor = Math.min(trackingTime / MAX_TRACK_TIME, 1.0);
-    
+
     const lockQuality = baseQuality * (1 - angVelPenalty) * timeFactor;
-    
+
     let state = "ACQUIRING";
-    if (lockQuality > 0.7 && detectionScore > FULL_LOCK_THRESHOLD) {
+    if(lockQuality > 0.7 && detectionScore > FULL_LOCK_THRESHOLD){
         state = "LOCKED";
     }
-    
-    return {
-        state: state,
-        quality: ImprovedSensorMath.clamp(lockQuality, 0, 1)
-    };
+
+    return { state: state, quality: ImprovedSensorMath.clamp(lockQuality, 0, 1) };
 };
 
 // Weapon hit probability
@@ -720,62 +775,59 @@ ImprovedSensorMath.computeWeaponRange = function(baseAccuracy, hitThreshold) {
     return Math.max(0, distKm * 1000); // Return meters
 };
 
-// Clustering (simplified)
-ImprovedSensorMath.clusterTargets = function(targets, clusterRadius) {
+// ===== clusterTargets (compatible con targets {x,y,z,signature}) =====
+ImprovedSensorMath.clusterTargets = function(targets, clusterRadius){
     clusterRadius = Math.max(100, clusterRadius || 5000);
     const COMPRESSION_FACTOR = 0.85;
-    
     const clusters = [];
     const claimed = new Array(targets.length).fill(false);
-    
-    for (let i = 0; i < targets.length; i++) {
-        if (!claimed[i]) {
-            const target = targets[i];
-            
-            const cluster = {
-                members: [i],
-                total_sig: target.signature || 0,
-                weighted_pos_x: target.x * (target.signature || 1),
-                weighted_pos_y: target.y * (target.signature || 1)
-            };
-            claimed[i] = true;
-            
-            for (let j = 0; j < targets.length; j++) {
-                if (i !== j && !claimed[j]) {
-                    const other = targets[j];
-                    const dx = target.x - other.x;
-                    const dy = target.y - other.y;
-                    const dist = Math.sqrt(dx*dx + dy*dy);
-                    
-                    if (dist <= clusterRadius) {
-                        cluster.members.push(j);
-                        cluster.total_sig += (other.signature || 0);
-                        cluster.weighted_pos_x += other.x * (other.signature || 1);
-                        cluster.weighted_pos_y += other.y * (other.signature || 1);
-                        claimed[j] = true;
-                    }
-                }
+
+    for(let i=0;i<targets.length;i++){
+        if(claimed[i]) continue;
+        const t = targets[i];
+        const cluster = {
+            members: [i],
+            total_sig: (t.signature || 0),
+            weighted_pos_x: (t.x || 0) * (t.signature || 1),
+            weighted_pos_y: (t.y || 0) * (t.signature || 1),
+            weighted_pos_z: (t.z || 0) * (t.signature || 1)
+        };
+        claimed[i] = true;
+
+        for(let j=0;j<targets.length;j++){
+            if(i===j || claimed[j]) continue;
+            const other = targets[j];
+            const dx = (t.x||0) - (other.x||0);
+            const dy = (t.y||0) - (other.y||0);
+            const dz = (t.z||0) - (other.z||0);
+            const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+            if(dist <= clusterRadius){
+                cluster.members.push(j);
+                cluster.total_sig += (other.signature || 0);
+                cluster.weighted_pos_x += (other.x||0) * (other.signature || 1);
+                cluster.weighted_pos_y += (other.y||0) * (other.signature || 1);
+                cluster.weighted_pos_z += (other.z||0) * (other.signature || 1);
+                claimed[j] = true;
             }
-            
-            const count = cluster.members.length;
-            const display_sig = cluster.total_sig * (count > 1 ? COMPRESSION_FACTOR : 1.0);
-            
-            let pos_x = 0, pos_y = 0;
-            if (cluster.total_sig > 0) {
-                pos_x = cluster.weighted_pos_x / cluster.total_sig;
-                pos_y = cluster.weighted_pos_y / cluster.total_sig;
-            }
-            
-            clusters.push({
-                x: pos_x,
-                y: pos_y,
-                signature: display_sig,
-                count: count,
-                members: cluster.members.map(idx => targets[idx])
-            });
         }
+
+        const count = cluster.members.length;
+        const display_sig = cluster.total_sig * (count>1 ? COMPRESSION_FACTOR : 1.0);
+        let pos_x = 0, pos_y = 0, pos_z = 0;
+        if(cluster.total_sig > 0){
+            pos_x = cluster.weighted_pos_x / cluster.total_sig;
+            pos_y = cluster.weighted_pos_y / cluster.total_sig;
+            pos_z = cluster.weighted_pos_z / cluster.total_sig;
+        }
+        clusters.push({
+            x: pos_x,
+            y: pos_y,
+            z: pos_z,
+            signature: display_sig,
+            count: count,
+            members: cluster.members.map(idx => targets[idx])
+        });
     }
-    
     return clusters;
 };
 
@@ -801,8 +853,10 @@ const DOM = {
     // HUD elements
     hudPlayerState: null,
     hudContacts: null,
-    hudLockStatus: null,
+    hudLockOutgoing: null,
+    hudLockIncoming: null,
     hudSelection: null,
+    threatWarning: null,
     // Player controls
     playerShipType: null,
     playerProfileDesc: null,
@@ -842,8 +896,10 @@ const DOM = {
         // HUD
         this.hudPlayerState = document.getElementById('hud-player-state');
         this.hudContacts = document.getElementById('hud-contacts');
-        this.hudLockStatus = document.getElementById('hud-lock-status');
+        this.hudLockOutgoing = document.getElementById('hud-lock-outgoing');
+        this.hudLockIncoming = document.getElementById('hud-lock-incoming');
         this.hudSelection = document.getElementById('hud-selection');
+        this.threatWarning = document.getElementById('threat-warning');
         
         // Player controls
         this.playerShipType = document.getElementById('player-ship-type');
@@ -916,7 +972,8 @@ const STATE = {
     player: null, // Will be initialized as Player instance
     observer: { x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, sensorMode: 'Active', sensorPower: 1.0 }, // Legacy compatibility
     targets: [],
-    lockState: { targetId: null, trackingTime: 0, status: 'NONE', quality: 0, prevStatus: 'NONE' },
+    outgoingLock: { targetId: null, trackingTime: 0, status: 'NONE', quality: 0, prevStatus: 'NONE' },
+    incomingLocks: [], // array of { sourceId, trackingTime, status, quality }
     selectedId: null,
     playing: true,
     zoom: 0.3,
@@ -924,10 +981,12 @@ const STATE = {
     panY: 0,
     defaultShipType: "Heavy Frigate",
     debugMode: false,
+    playerBeingLocked: false,
     
     // HUD update throttling
     _hudUpdateCounter: 0,
-    _hudUpdateInterval: 3 // Update HUD every N frames
+    _hudUpdateInterval: 3, // Update HUD every N frames
+    _last_dt: 0.016 // Last delta time
 };
 
 // =========================================================================
@@ -1023,6 +1082,7 @@ class Target {
         this.radarActive = true;
         this.ecm = 0;
         this.role = 'dummy';
+        this.sensorPower = undefined; // Will use CONFIG.SENSOR_STRENGTH if undefined
         
         // Computed
         this.signature = 0;
@@ -1032,6 +1092,10 @@ class Target {
         this.trackingQuality = 0;
         this.angularVelocity = 0;
         this.hitProbability = 0;
+        
+        // Incoming lock tracking (per-target)
+        this._incomingTrackingTime = 0;
+        this._prevIncomingStatus = 'NONE';
     }
     
     getSizeClass() {
@@ -1053,6 +1117,88 @@ function rad(deg) { return deg * Math.PI / 180; }
 function deg(rad) { return rad * 180 / Math.PI; }
 
 // =========================================================================
+// LOCK UPDATE FUNCTION
+// =========================================================================
+// ===== updateLocks(STATE, CONFIG) =====
+// - Actualiza STATE.outgoingLock usando player -> targetId
+// - Llena STATE.incomingLocks con locks que sources intentan sobre player
+function updateLocks(){
+    // OUTGOING: player locking selected target (or lock targetId)
+    const out = STATE.outgoingLock;
+    const target = out.targetId ? STATE.targets.find(t=>t.id === out.targetId) : null;
+    if(target && target.detected && STATE.player){
+        out.trackingTime += STATE._last_dt || 0.016; // rely on last dt set in loop
+        const targetVel = { x: Math.cos(target.heading)*target.speed, y: Math.sin(target.heading)*target.speed, z: 0 };
+        const playerVel = { x: STATE.player.vx, y: STATE.player.vy, z: 0 };
+        const angRes = ImprovedSensorMath.computeAngularVelocity({x: target.x, y: target.y, z: 0}, targetVel, {x: STATE.player.x, y: STATE.player.y, z: 0}, playerVel);
+        const angVel = angRes[0];
+        const lockResult = ImprovedSensorMath.computeLockState(target.detectionScore, angVel, out.trackingTime, CONFIG.get('TRACKING_SPEED'));
+        out.status = lockResult.state;
+        out.quality = lockResult.quality;
+    } else {
+        // decay tracking time
+        out.trackingTime = Math.max(0, out.trackingTime - (STATE._last_dt || 0.016) * 2);
+        out.status = "NONE";
+        out.quality = 0;
+    }
+    if(out.status !== out.prevStatus){
+        log(`OutgoingLock: ${out.status} [${Math.round(out.quality*100)}%]`, 'LOCK', 'PLR');
+        out.prevStatus = out.status;
+    }
+
+    // INCOMING: each detected target may attempt to lock the player
+    STATE.incomingLocks = [];
+    STATE.targets.forEach(src=>{
+        // A source can only try to lock the player if it detects the player.
+        // We need the source's detection score *of the player* — we can compute it
+        // by using player's signature and source's sensor power (if you model that).
+        // For simplicity assume target has sensorPower  (defaults to CONFIG.SENSOR_STRENGTH)
+        const sourceSensorPower = (src.sensorPower !== undefined) ? src.sensorPower : CONFIG.get('SENSOR_STRENGTH');
+        const distance = dist(src, STATE.player || {x:0, y:0});
+        const detectionScoreOnPlayer = ImprovedSensorMath.computeDetectionScore( STATE.player ? STATE.player.signature : 0, sourceSensorPower, distance );
+
+        // If source can detect player, evaluate its lock state on the player
+        if(ImprovedSensorMath.isDetected(detectionScoreOnPlayer, CONFIG.get('DETECT_THRESH'))){
+            // compute angular velocity of player relative to source
+            const srcVel = { x: Math.cos(src.heading)*src.speed, y: Math.sin(src.heading)*src.speed, z: 0 };
+            const playerVel = { x: STATE.player ? STATE.player.vx : 0, y: STATE.player ? STATE.player.vy : 0, z: 0 };
+            const angResSrc = ImprovedSensorMath.computeAngularVelocity({x: STATE.player.x, y: STATE.player.y, z: 0}, playerVel, {x: src.x, y: src.y, z: 0}, srcVel);
+            const angVelSrc = angResSrc[0];
+
+            // track per-source time — we'll use a temporary map on the source object
+            src._incomingTrackingTime = Math.max(0, (src._incomingTrackingTime || 0) + (STATE._last_dt || 0.016));
+            const lockOnPlayer = ImprovedSensorMath.computeLockState(detectionScoreOnPlayer, angVelSrc, src._incomingTrackingTime, CONFIG.get('TRACKING_SPEED'));
+
+            STATE.incomingLocks.push({
+                sourceId: src.id,
+                status: lockOnPlayer.state,
+                quality: lockOnPlayer.quality,
+                detectionScore: detectionScoreOnPlayer
+            });
+
+            // log transitions
+            if(src._prevIncomingStatus !== lockOnPlayer.state){
+                log(`IncomingLockFrom: ${src.id} => ${lockOnPlayer.state} [${Math.round(lockOnPlayer.quality*100)}%]`, 'LOCK', 'SYS');
+                src._prevIncomingStatus = lockOnPlayer.state;
+            }
+        } else {
+            // reset per-source timer
+            src._incomingTrackingTime = Math.max(0, (src._incomingTrackingTime || 0) - (STATE._last_dt || 0.016)*2);
+            if(src._incomingTrackingTime <= 0){
+                src._incomingTrackingTime = 0;
+                if(src._prevIncomingStatus && src._prevIncomingStatus !== 'NONE'){
+                    log(`IncomingLockFrom: ${src.id} LOST`, 'LOCK', 'SYS');
+                }
+                src._prevIncomingStatus = 'NONE';
+            }
+        }
+    });
+
+    // Optional: expose quick boolean for HUD: is player being locked by anyone?
+    STATE.playerBeingLocked = STATE.incomingLocks.some(l => l.status === 'LOCKED');
+}
+
+// =========================================================================
 // SIMULATION LOOP (with transform reset)
 // =========================================================================
 
@@ -1065,6 +1211,9 @@ function loop(time) {
     lastTime = time;
 
     if (!STATE.playing) return;
+
+    // Store dt for lock updates
+    STATE._last_dt = dt;
 
     // Update player
     if (STATE.player) {
@@ -1126,32 +1275,8 @@ function loop(time) {
         }
     });
 
-    // Update lock state
-    const target = STATE.lockState.targetId ? STATE.targets.find(t => t.id === STATE.lockState.targetId) : null;
-    
-    if (target && target.detected) {
-        STATE.lockState.trackingTime += dt;
-        
-        const lockResult = ImprovedSensorMath.computeLockState(
-            target.detectionScore,
-            target.angularVelocity,
-            STATE.lockState.trackingTime,
-            CONFIG.get('TRACKING_SPEED')
-        );
-        
-        STATE.lockState.status = lockResult.state;
-        STATE.lockState.quality = lockResult.quality;
-        target.trackingQuality = lockResult.quality;
-    } else {
-        STATE.lockState.trackingTime = Math.max(0, STATE.lockState.trackingTime - dt * 2);
-        STATE.lockState.status = "NONE";
-        STATE.lockState.quality = 0;
-    }
-
-    if (STATE.lockState.status !== STATE.lockState.prevStatus) {
-        log(`Lock State: ${STATE.lockState.status} [${(STATE.lockState.quality*100).toFixed(0)}%]`, 'LOCK');
-        STATE.lockState.prevStatus = STATE.lockState.status;
-    }
+    // Update locks (both outgoing and incoming)
+    updateLocks();
 
     render();
     
@@ -1174,22 +1299,25 @@ let canvasW, canvasH;
 function resizeCanvas() {
     const parent = DOM.canvas.parentElement;
     const dpr = window.devicePixelRatio || 1;
-    const rect = parent.getBoundingClientRect();
-    DOM.canvas.width = rect.width * dpr;
-    DOM.canvas.height = rect.height * dpr;
-    DOM.canvas.style.width = rect.width + 'px';
-    DOM.canvas.style.height = rect.height + 'px';
-    canvasW = rect.width;
-    canvasH = rect.height;
-    // Don't scale context here; do it in render() per frame
+    DOM.canvas.width = parent.clientWidth * dpr;
+    DOM.canvas.height = parent.clientHeight * dpr;
+    DOM.canvas.style.width = parent.clientWidth + 'px';
+    DOM.canvas.style.height = parent.clientHeight + 'px';
+    canvasW = parent.clientWidth;
+    canvasH = parent.clientHeight;
+    DOM.ctx.scale(dpr, dpr);
 }
 
 function render() {
+    // PATCH START: Reset debug label stack
+    window.DEBUG_LABEL_STACK = [];
+    // PATCH END
+
     const ctx = DOM.ctx;
-    const dpr = window.devicePixelRatio || 1;
     
     // CRITICAL: Reset transform to avoid accumulated scaling
     ctx.setTransform(1, 0, 0, 1, 0, 0);
+    const dpr = window.devicePixelRatio || 1;
     ctx.scale(dpr, dpr);
     
     ctx.fillStyle = '#0d1117';
@@ -1343,11 +1471,11 @@ function renderTarget(ctx, t) {
     ctx.closePath();
     ctx.fill();
 
-    ctx.restore();
+    ctx.restore(); // Return to world transform for drawing (then we will switch to screen)
 
     if (t.detected) {
         ctx.lineWidth = 2 / STATE.zoom;
-        ctx.strokeStyle = `rgba(88, 166, 255, ${t.trackingQuality})`;
+        ctx.strokeStyle = `rgba(88, 166, 255, ${t.trackingQuality || 0.5})`;
         ctx.beginPath();
         ctx.arc(t.x, t.y, 40, 0, Math.PI*2);
         ctx.stroke();
@@ -1372,22 +1500,76 @@ function renderTarget(ctx, t) {
             ctx.stroke();
         }
 
-        ctx.save();
-        ctx.translate(t.x, t.y);
-        ctx.scale(scaleFactor, scaleFactor);
-        ctx.fillStyle = '#c9d1d9';
-        ctx.font = '10px monospace';
-        ctx.textAlign = 'center';
-        ctx.fillText(`[${t.role.toUpperCase().substr(0,1)}]`, 0, -20);
-        
+        // PATCH START: Screen-space Telemetry & Ranges
         if (STATE.debugMode) {
-            ctx.fillText(`SIG:${t.signature.toFixed(1)}`, 0, 25);
-            ctx.fillText(`DET:${t.detectionScore.toFixed(0)}`, 0, 35);
-            ctx.fillText(`HIT:${(t.hitProbability*100).toFixed(0)}%`, 0, 45);
+            // Switch to Screen Space for Text
+            ctx.save();
+            ctx.setTransform(1, 0, 0, 1, 0, 0); 
+            // Manual project world->screen
+            const cx = canvasW / 2;
+            const cy = canvasH / 2;
+            const sx = (t.x * STATE.zoom) + cx + STATE.panX;
+            const sy = (t.y * STATE.zoom) + cy + STATE.panY;
+            
+            // Calculate Range for this ship (How far it sees Player)
+            const sensPwr = t.sensorPower || CONFIG.get('SENSOR_STRENGTH');
+            const rangeVsPlayer = ImprovedSensorMath.computeDetectionRange(
+                STATE.player ? STATE.player.signature : 10, 
+                sensPwr, 
+                CONFIG.get('DETECT_THRESH')
+            );
+
+            const lines = [
+                `[${t.role.toUpperCase().substr(0,1)}] ${t.shipType}`,
+                `SIG: ${t.signature.toFixed(1)} | ACT: ${(t.activityLevel*100).toFixed(0)}%`,
+                `DET: ${t.detectionScore.toFixed(0)} | P(HIT): ${(t.hitProbability*100).toFixed(0)}%`,
+                `SENS: ${(rangeVsPlayer/1000).toFixed(1)}km (vs Player)`
+            ];
+
+            // Stack logic
+            ctx.font = '10px monospace';
+            const lineHeight = 12;
+            let currentY = sy + 30; // Start offset below ship
+
+            // Simple collision check against global stack
+            const checkOverlap = (y) => {
+                if(!window.DEBUG_LABEL_STACK) return false;
+                return window.DEBUG_LABEL_STACK.some(prevY => Math.abs(prevY - y) < lineHeight);
+            };
+
+            while(checkOverlap(currentY)) {
+                currentY += lineHeight;
+            }
+            
+            // Draw block
+            ctx.textAlign = 'center';
+            lines.forEach((line, i) => {
+                const dy = currentY + (i * lineHeight);
+                window.DEBUG_LABEL_STACK.push(dy); // Register line
+                
+                // Background for readability
+                const metrics = ctx.measureText(line);
+                ctx.fillStyle = 'rgba(13, 17, 23, 0.7)';
+                ctx.fillRect(sx - metrics.width/2 - 2, dy - 8, metrics.width + 4, 10);
+                
+                ctx.fillStyle = i===0 ? '#c9d1d9' : '#8b949e'; // Title white, rest dim
+                if(line.includes('SENS')) ctx.fillStyle = '#d29922';
+                ctx.fillText(line, sx, dy);
+            });
+            ctx.restore();
         } else {
-            ctx.fillText(`Q:${(t.trackingQuality*100).toFixed(0)}%`, 0, 25);
+            // Original tracking quality label
+            ctx.save();
+            ctx.translate(t.x, t.y);
+            ctx.scale(scaleFactor, scaleFactor);
+            ctx.fillStyle = '#c9d1d9';
+            ctx.font = '10px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(`[${t.role.toUpperCase().substr(0,1)}]`, 0, -20);
+            ctx.fillText(`Q:${((t.trackingQuality || 0)*100).toFixed(0)}%`, 0, 25);
+            ctx.restore();
         }
-        ctx.restore();
+        // PATCH END
     }
 }
 
@@ -1397,33 +1579,39 @@ function renderDebugOverlays(ctx) {
     const scaleFactor = 1 / STATE.zoom;
     
     // 1. Detection Ring (for selected target)
-    if (STATE.selectedId) {
-        const selT = STATE.targets.find(x => x.id === STATE.selectedId);
-        if (selT && selT.signature > 0) {
-            const effectiveSensorPower = CONFIG.get('SENSOR_STRENGTH') * STATE.player.sensorPower;
-            const threshold = CONFIG.get('DETECT_THRESH');
-            
-            const detectionRange = ImprovedSensorMath.computeDetectionRange(
-                selT.signature,
-                effectiveSensorPower,
-                threshold
-            );
+    const selT = STATE.targets.find(x => x.id === STATE.selectedId);
+    if (selT && selT.signature > 0) {
+        const effectiveSensorPower = CONFIG.get('SENSOR_STRENGTH') * STATE.player.sensorPower;
+        const threshold = CONFIG.get('DETECT_THRESH');
+        
+        const detectionRange = ImprovedSensorMath.computeDetectionRange(
+            selT.signature,
+            effectiveSensorPower,
+            threshold
+        );
 
-            if (detectionRange > 0 && detectionRange < 1000000) {
-                ctx.strokeStyle = 'rgba(210, 153, 34, 0.5)';
-                ctx.lineWidth = 2 / STATE.zoom;
-                ctx.setLineDash([10/STATE.zoom, 10/STATE.zoom]);
-                ctx.beginPath();
-                ctx.arc(0, 0, detectionRange, 0, Math.PI*2);
-                ctx.stroke();
-                ctx.setLineDash([]);
+        if (detectionRange > 0 && detectionRange < 1000000) {
+            ctx.strokeStyle = 'rgba(210, 153, 34, 0.5)';
+            ctx.lineWidth = 2 / STATE.zoom;
+            ctx.setLineDash([10/STATE.zoom, 10/STATE.zoom]);
+            ctx.beginPath();
+            ctx.arc(0, 0, detectionRange, 0, Math.PI*2);
+            ctx.stroke();
+            ctx.setLineDash([]);
 
-                ctx.save();
-                ctx.fillStyle = '#d29922';
-                ctx.font = `${10/STATE.zoom}px monospace`;
-                ctx.fillText(`DETECT LIMIT (${(detectionRange/1000).toFixed(1)}km)`, detectionRange + (5/STATE.zoom), 0);
-                ctx.restore();
-            }
+            ctx.save();
+            // PATCH START: Use screen space transform for text readability
+            const labelX = detectionRange + (5/STATE.zoom);
+            const labelY = 0;
+            ctx.translate(labelX, labelY);
+            ctx.scale(scaleFactor, scaleFactor); 
+            ctx.fillStyle = '#d29922';
+            ctx.font = `10px monospace`;
+            ctx.textAlign = "left";
+            ctx.textBaseline = "middle";
+            ctx.fillText(`DETECT LIMIT (${(detectionRange/1000).toFixed(1)}km)`, 5, 0);
+            ctx.restore();
+            // PATCH END
         }
     }
     
@@ -1439,17 +1627,25 @@ function renderDebugOverlays(ctx) {
         ctx.setLineDash([]);
         
         ctx.save();
+        // PATCH START: Fixed text alignment logic
+        const labelX = weaponRange + (5/STATE.zoom);
+        const labelY = 20/STATE.zoom;
+        ctx.translate(labelX, labelY);
+        ctx.scale(scaleFactor, scaleFactor);
         ctx.fillStyle = '#f85149';
-        ctx.font = `${10/STATE.zoom}px monospace`;
-        ctx.fillText(`WEAPON RANGE (${(weaponRange/1000).toFixed(1)}km)`, weaponRange + (5/STATE.zoom), 20/STATE.zoom);
+        ctx.font = `10px monospace`;
+        ctx.textAlign = "left";
+        ctx.textBaseline = "middle";
+        ctx.fillText(`WEAPON RANGE (${(weaponRange/1000).toFixed(1)}km)`, 5, 0);
         ctx.restore();
+        // PATCH END
     }
     
-    // 3. Lock Progress Radial Gauge
-    if (STATE.lockState.quality > 0) {
+    // 3. Lock Progress Radial Gauge (Outgoing)
+    if (STATE.outgoingLock.quality > 0) {
         const gaugeRadius = 30;
         const startAngle = -Math.PI / 2;
-        const endAngle = startAngle + (STATE.lockState.quality * 2 * Math.PI);
+        const endAngle = startAngle + (STATE.outgoingLock.quality * 2 * Math.PI);
         
         ctx.save();
         ctx.translate(0, 0);
@@ -1463,8 +1659,8 @@ function renderDebugOverlays(ctx) {
         ctx.stroke();
         
         // Progress arc
-        const lockColor = STATE.lockState.status === 'LOCKED' ? '#f85149' : 
-                         STATE.lockState.status === 'ACQUIRING' ? '#d29922' : '#58a6ff';
+        const lockColor = STATE.outgoingLock.status === 'LOCKED' ? '#f85149' : 
+                         STATE.outgoingLock.status === 'ACQUIRING' ? '#d29922' : '#58a6ff';
         ctx.strokeStyle = lockColor;
         ctx.lineWidth = 4;
         ctx.beginPath();
@@ -1476,7 +1672,11 @@ function renderDebugOverlays(ctx) {
         ctx.font = 'bold 10px monospace';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(`${(STATE.lockState.quality * 100).toFixed(0)}%`, 0, 0);
+        // PATCH START: Add Lock Status Text Offset
+        ctx.fillText(`${(STATE.outgoingLock.quality * 100).toFixed(0)}%`, 0, 0);
+        ctx.font = '9px monospace';
+        ctx.fillText(STATE.outgoingLock.status, 0, gaugeRadius + 12);
+        // PATCH END
         
         ctx.restore();
     }
@@ -1492,11 +1692,35 @@ function updateHUD() {
     // Update contact count
     DOM.hudContacts.innerText = STATE.targets.filter(t => t.detected).length;
     
-    // Update lock status
-    const lockPct = Math.round(STATE.lockState.quality * 100);
-    DOM.hudLockStatus.innerText = `${STATE.lockState.status} (${lockPct}%)`;
-    DOM.hudLockStatus.style.color = STATE.lockState.status === 'LOCKED' ? '#f85149' :
-        (STATE.lockState.status === 'ACQUIRING' ? '#d29922' : '#8b949e');
+    // Update outgoing lock status
+    const out = STATE.outgoingLock;
+    if(out && out.targetId){
+        DOM.hudLockOutgoing.innerText = `${out.status} (${Math.round(out.quality*100)}%)`;
+        DOM.hudLockOutgoing.style.color = out.status === 'LOCKED' ? '#f85149' :
+            (out.status === 'ACQUIRING' ? '#d29922' : '#8b949e');
+    } else {
+        DOM.hudLockOutgoing.innerText = `NONE (0%)`;
+        DOM.hudLockOutgoing.style.color = '#8b949e';
+    }
+    
+    // Update incoming lock status
+    const incoming = STATE.incomingLocks.filter(l=>l.status!=='NONE');
+    if(incoming.length > 0){
+        const locked = incoming.filter(l=>l.status==='LOCKED');
+        if(locked.length > 0){
+            DOM.hudLockIncoming.innerText = `${locked.length} LOCKED`;
+            DOM.hudLockIncoming.style.color = '#f85149';
+            DOM.threatWarning.style.display = 'block';
+        } else {
+            DOM.hudLockIncoming.innerText = `${incoming.length} TRACKING`;
+            DOM.hudLockIncoming.style.color = '#d29922';
+            DOM.threatWarning.style.display = 'none';
+        }
+    } else {
+        DOM.hudLockIncoming.innerText = `NONE`;
+        DOM.hudLockIncoming.style.color = '#8b949e';
+        DOM.threatWarning.style.display = 'none';
+    }
 
     // Update selection info
     const selT = STATE.targets.find(x => x.id === STATE.selectedId);
@@ -1517,17 +1741,10 @@ function updateHUD() {
 
 let isDragging = false;
 let dragTargetId = null;
+let lastMouse = { x: 0, y: 0 };
 
 function setupInputHandlers() {
     const cvs = DOM.canvas;
-
-    const getCanvasPos = (e) => {
-        const rect = cvs.getBoundingClientRect();
-        return {
-            x: e.clientX - rect.left,
-            y: e.clientY - rect.top
-        };
-    };
 
     const toWorld = (sx, sy) => {
         const cx = canvasW / 2;
@@ -1540,10 +1757,10 @@ function setupInputHandlers() {
 
     cvs.addEventListener('mousedown', e => {
         e.preventDefault();
-        const mPos = getCanvasPos(e);
+        lastMouse = { x: e.clientX, y: e.clientY };
 
         if (e.button === 0) {
-            const mWorld = toWorld(mPos.x, mPos.y);
+            const mWorld = toWorld(e.offsetX, e.offsetY);
             const hitRad = 20 / STATE.zoom;
 
             const clicked = STATE.targets.find(t => dist(t, mWorld) < hitRad);
@@ -1563,26 +1780,20 @@ function setupInputHandlers() {
 
     cvs.addEventListener('mousemove', e => {
         if (!isDragging) return;
-        const mPos = getCanvasPos(e);
-        
+
+        const dx = e.clientX - lastMouse.x;
+        const dy = e.clientY - lastMouse.y;
+        lastMouse = { x: e.clientX, y: e.clientY };
+
         if (dragTargetId && e.buttons === 1) {
-            const mWorld = toWorld(mPos.x, mPos.y);
             const t = STATE.targets.find(x => x.id === dragTargetId);
             if (t) {
-                // For dragging, we essentially set the position to the mouse world position
-                // To avoid jumping, we should ideally track offset, but direct setting is fine for this sandbox
-                t.x = mWorld.x;
-                t.y = mWorld.y;
+                t.x += dx / STATE.zoom;
+                t.y += dy / STATE.zoom;
             }
         } else {
-            // Pan logic
-            // Since we don't have deltaX/Y from the event in all browsers reliable relative to canvas,
-            // we'll implement standard movement. 
-            // Better to use movementX/Y for panning if available, or track last pos.
-            const movementX = e.movementX;
-            const movementY = e.movementY;
-            STATE.panX += movementX;
-            STATE.panY += movementY;
+            STATE.panX += dx;
+            STATE.panY += dy;
         }
     });
 
@@ -1591,13 +1802,12 @@ function setupInputHandlers() {
 
     cvs.addEventListener('wheel', e => {
         e.preventDefault();
-        const mPos = getCanvasPos(e);
-        
-        // World before zoom
+
         const cx = canvasW / 2;
         const cy = canvasH / 2;
-        const wx_before = (mPos.x - cx - STATE.panX) / STATE.zoom;
-        const wy_before = (mPos.y - cy - STATE.panY) / STATE.zoom;
+
+        const wx = (e.offsetX - cx - STATE.panX) / STATE.zoom;
+        const wy = (e.offsetY - cy - STATE.panY) / STATE.zoom;
 
         const zoomSpeed = 0.001;
         const d = -e.deltaY;
@@ -1605,11 +1815,8 @@ function setupInputHandlers() {
 
         STATE.zoom = newZoom;
 
-        // Adjust pan so that world coordinates under mouse remain constant
-        // mPos.x = (wx_before * newZoom) + cx + newPanX
-        // newPanX = mPos.x - cx - (wx_before * newZoom)
-        STATE.panX = mPos.x - cx - (wx_before * newZoom);
-        STATE.panY = mPos.y - cy - (wy_before * newZoom);
+        STATE.panX = e.offsetX - cx - wx * STATE.zoom;
+        STATE.panY = e.offsetY - cy - wy * STATE.zoom;
 
         DOM.zoomSlider.value = STATE.zoom;
         DOM.zoomVal.innerText = STATE.zoom.toFixed(2);
@@ -1935,7 +2142,8 @@ function spawnTarget() {
 
 function resetSim() {
     STATE.targets = [];
-    STATE.lockState = { targetId: null, trackingTime: 0, status: 'NONE', quality: 0, prevStatus: 'NONE' };
+    STATE.outgoingLock = { targetId: null, trackingTime: 0, status: 'NONE', quality: 0, prevStatus: 'NONE' };
+    STATE.incomingLocks = [];
     IDGenerator.reset();
     
     // Reset player
@@ -1955,9 +2163,9 @@ function resetSim() {
 function selectTarget(id) {
     STATE.selectedId = id;
 
-    if (STATE.lockState.targetId !== id) {
-        STATE.lockState.targetId = id;
-        STATE.lockState.trackingTime = 0;
+    if (STATE.outgoingLock.targetId !== id) {
+        STATE.outgoingLock.targetId = id;
+        STATE.outgoingLock.trackingTime = 0;
         log(`Targeting ID ${id}`, 'INFO', 'SYS');
     }
 
