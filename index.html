@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sensor and Lock Mechanics Sandbox v4.2 - Enhanced Refactored</title>
+<title>Sensor and Lock Mechanics Sandbox v4.2</title>
 <!-- SMALL FIXES APPLIED: (1) Homogenized player detection logic, (2) Replaced sliders with number inputs, (3) Added custom ship profile creator with localStorage, (4) Pure black background + white grid + larger ship icons + 2x zoom-out, (5) Allie/Enemy tags with distinct colors, (6) Fixed incoming lock indicator layout, (7) Thicker sensor rings, (8) Spawn enemies 40km right with default headings, (9) Export/import full state JSON, (10) Perf test spawns 19 allies + 20 enemies, (11) HUD alignment for larger icons -->
 <style>
 :root {
@@ -316,24 +316,103 @@
     }
 
     /* SMALL FIX #6: Fixed incoming lock indicator layout with flex and gaps */
-    .threat-indicator {
-        position: absolute;
-        top: 50px;
-        left: 10px;
-        background: rgba(248, 81, 73, 0.2);
-        border: 1px solid var(--danger);
-        padding: 8px 12px;
-        border-radius: 4px;
-        font-family: var(--font-mono);
-        font-size: 10px;
-        color: var(--danger);
-        pointer-events: none;
-        z-index: 50;
-        display: flex;
+    /* ---------- Incoming lock: improved placement, colors & responsive ---------- */
+.threat-indicator {
+    /* Move to top-right inside the viewport so it won't overlap the top-left HUD */
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 200; /* sit above most UI, but below global modals if any */
+
+    /* Visuals */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    min-width: 160px;
+    max-width: 360px;
+    box-sizing: border-box;
+    pointer-events: none; /* non-interactive overlay */
+
+    /* Better contrast + subtle glass effect */
+    background: linear-gradient(180deg, rgba(20,16,16,0.70), rgba(20,16,16,0.55));
+    border: 1px solid rgba(248,81,73,0.35);
+    backdrop-filter: blur(6px) saturate(120%);
+
+    /* Text */
+    color: var(--danger);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.6);
+
+    /* Prevent internal text overflow, but allow wrap when needed */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    /* Depth */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+}
+
+/* small icon (optional inside markup) */
+    .threat-indicator .ti-icon {
+        display: inline-flex;
         align-items: center;
-        gap: 8px;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: linear-gradient(180deg, rgba(248,81,73,1), rgba(255,120,100,1));
+        color: #0d1117;
+        font-size: 13px;
+        flex: 0 0 20px;
+        box-shadow: 0 2px 6px rgba(248,81,73,0.25);
     }
 
+/* make the message body readable if it wraps */
+    .threat-indicator .ti-text {
+        overflow: visible;
+        white-space: normal;
+        font-weight: 700;
+        line-height: 1.1;
+    }
+
+/* If you hide it via inline style/display, prefer aria-hidden attribute toggle:
+   .threat-indicator[aria-hidden="true"] { display: none; } */
+
+/* Responsive: on narrow viewports move to bottom-center and allow multi-line (no overlap with bottom-right legend) */
+    /* MOBILE: keep threat indicator at the TOP (centered) so it never overlaps bottom-right HUD/legend */
+    @media (max-width: 760px) {
+        .threat-indicator {
+            /* force top-centered placement (instead of bottom-center) */
+            top: 12px;
+            bottom: auto;
+            left: 50%;
+            right: auto;
+            transform: translateX(-50%);
+            max-width: 92%;
+            white-space: normal;
+            text-overflow: clip;
+            padding: 10px 12px;
+        }
+    }
+    /* Control por clase: mostrar/ocultar con clase (por si se usa toggle) */
+    .threat-indicator { display: none; }               /* default hiddeable */
+    .threat-indicator.visible { display: flex !important; }
+
+    /* Si el threat está visible, subimos la leyenda de rango para evitar solapamiento */
+    #range-legend {
+        transition: bottom 0.12s ease;
+    }
+    #range-legend.shift-up {
+        bottom: 70px; /* eleva la leyenda para dejar espacio al indicador */
+    }
+
+    /* Asegurarnos que el legend esté encima si hace falta (pero preferimos moverlo) */
+    #range-legend { z-index: 150; }
+    .threat-indicator { z-index: 200; }
     /* Dual input groups (slider + number) */
     .dual-input-group {
         display: flex;
@@ -381,7 +460,7 @@
 
 <header>
 <div style="display:flex; align-items:center; gap:15px;">
-<h1>ENHANCED SENSOR TESTBED v4.2</h1>
+<h1>Sensor and Lock Mechanics Sandbox v4.2</h1>
 <div class="flex-row">
 <button id="btn-play">Pause</button>
 <button id="btn-step">Step</button>
@@ -412,7 +491,7 @@
     <div class="legend-title">RANGE RINGS</div>
     <div class="legend-item">
         <div class="legend-color" style="background: rgba(88, 166, 255, 0.3);"></div>
-        <span>Entity Relative (1km, 5km, 10km)</span>
+        <span>Entity Relative</span>
     </div>
     <div class="legend-item">
         <div class="legend-color" style="background: rgba(63, 185, 80, 0.3);"></div>
@@ -2018,9 +2097,14 @@ function updateHUD() {
     }
 
     if (DOM.threatWarning) {
-        DOM.threatWarning.style.display = STATE.playerBeingLocked ? 'block' : 'none';
+    // usamos clase visible/hidden en lugar de manipular directamente style.display
+    DOM.threatWarning.classList.toggle('visible', !!STATE.playerBeingLocked);
+    DOM.threatWarning.setAttribute('aria-hidden', STATE.playerBeingLocked ? 'false' : 'true');
+}
+    // si la leyenda de rango existe, la movemos hacia arriba cuando el threat sea visible
+    if (DOM.rangeLegend) {
+        DOM.rangeLegend.classList.toggle('shift-up', !!STATE.playerBeingLocked);
     }
-
     if (DOM.hudSelection && STATE.selectedId) {
         const t = STATE.targets.find(x => x.id === STATE.selectedId);
         if (t) {
