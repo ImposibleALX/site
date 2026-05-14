@@ -1,248 +1,408 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE MERCENARY CONTRACT</title>
+    <title>ModelandoIdeas | De la idea a lo real</title>
+    <!-- Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
         :root {
-            --term-bg: #020a02;
-            --term-green: #00ff41;
-            --term-green-dim: #00b32c;
-            --term-highlight: #ffffff;
-            --term-glow: 0 0 5px rgba(0, 255, 65, 0.6);
-            --term-glow-strong: 0 0 8px rgba(255, 255, 255, 0.8);
+            --primary-color: #1A1A2E; /* Azul noche profundo */
+            --secondary-color: #16213E; /* Azul oscuro */
+            --accent-color: #E94560; /* Rojo/Rosa vibrante */
+            --text-light: #F4F4F9;
+            --text-dark: #333;
+            --whatsapp-color: #25D366;
         }
 
-        body, html {
+        * {
             margin: 0;
             padding: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: var(--term-bg);
-            color: var(--term-green);
-            font-family: 'Courier New', Courier, monospace;
-            overflow: hidden; /* Enforces single window fit */
-            display: flex;
-            flex-direction: column;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
         }
 
-        /* CRT Screen Effects */
-        .crt-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 4px, 3px 100%;
-            pointer-events: none;
-            z-index: 100;
+        body {
+            background-color: #f9f9fc;
+            color: var(--text-dark);
         }
 
-        .content-wrapper {
-            padding: 1vh 1vw;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            z-index: 10;
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
         }
 
-        /* Header Styles */
+        /* --- Header --- */
         header {
-            text-align: center;
-            margin-bottom: 2vh;
-            border-bottom: 1px dashed var(--term-green-dim);
-            padding-bottom: 1.5vh;
-        }
-
-        h1 {
-            font-size: clamp(18px, 2.8vh + 0.5vw, 40px);
-            margin: 0 0 1vh 0;
-            text-shadow: var(--term-glow);
-            text-transform: uppercase;
-        }
-
-        .cursor {
-            display: inline-block;
-            background-color: var(--term-green);
-            width: 0.6em;
-            height: 1em;
-            vertical-align: text-bottom;
-            animation: blink 1s step-end infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        .intro {
-            font-size: clamp(13px, 1.6vh + 0.3vw, 24px);
-            margin: 0;
-            color: #aaffaa;
-        }
-
-        /* Grid Layout for Single Screen Fit */
-        .grid {
+            background-color: var(--primary-color);
+            padding: 1rem 5%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             display: flex;
-            flex: 1;
-            gap: 2vw;
-            min-height: 0; 
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .col {
-            flex: 1;
+        .logo {
+            color: var(--text-light);
+            font-size: 1.6rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .logo span { color: var(--accent-color); }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 25px;
+        }
+        nav ul li a {
+            color: var(--text-light);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        nav ul li a:hover { color: var(--accent-color); }
+
+        /* --- Hero Section --- */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(26, 26, 46, 0.85), rgba(22, 33, 62, 0.95)), url('https://i.ibb.co/6Pz3f8m/process-image.jpg') center/cover no-repeat;
             display: flex;
             flex-direction: column;
-            gap: 1.8vh;
-            overflow-y: hidden;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--text-light);
+            padding: 0 20px;
+        }
+        .hero h1 { font-size: 3.8rem; margin-bottom: 10px; line-height: 1.2; }
+        .hero h2 { font-size: 1.5rem; font-weight: 300; margin-bottom: 25px; font-style: italic; }
+        .hero p { max-width: 700px; margin-bottom: 35px; line-height: 1.7; }
+        .btn {
+            padding: 15px 35px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+        .btn-accent {
+            background-color: var(--accent-color);
+            color: var(--text-light);
+            box-shadow: 0 4px 20px rgba(233, 69, 96, 0.4);
+        }
+        .btn-accent:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(233, 69, 96, 0.6);
         }
 
-        /* Section Styles */
-        h3 {
-            font-size: clamp(14px, 1.8vh + 0.3vw, 26px);
-            margin: 0;
-            border-bottom: 1px solid var(--term-green-dim);
-            padding-bottom: 0.3vh;
-            color: var(--term-green);
-            text-shadow: var(--term-glow);
+        /* --- Generic Section Styling --- */
+        .section { padding: 100px 0; }
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 60px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* --- Why Us Section --- */
+        #benefits { background-color: #fff; }
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            text-align: center;
+        }
+        .benefit-card {
+            padding: 30px;
+        }
+        .benefit-card i {
+            font-size: 3rem;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+        .benefit-card h3 { font-size: 1.3rem; margin-bottom: 10px; }
+
+        /* --- Process Section --- */
+        .process-timeline {
+            position: relative;
+            max-width: 1000px;
+            margin: auto;
+        }
+        .process-timeline::after {
+            content: '';
+            position: absolute;
+            width: 3px;
+            background-color: var(--accent-color);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -1.5px;
+        }
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            width: 50%;
+        }
+        .timeline-item.left { left: 0; }
+        .timeline-item.right { left: 50%; }
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            right: -10px;
+            background-color: white;
+            border: 4px solid var(--accent-color);
+            top: 25px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+        .right::after { left: -10px; }
+        .timeline-content {
+            padding: 20px 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+         .timeline-content i { color: var(--accent-color); margin-right: 10px; }
+
+        /* --- Showcase Section --- */
+        #showcase { background-color: var(--secondary-color); color: var(--text-light); }
+        #showcase .section-title, #showcase .section-subtitle { color: var(--text-light); }
+        .showcase-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 50px;
+            flex-wrap: wrap;
+        }
+        .showcase-image {
+            flex: 1;
+            max-width: 500px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        h3::before {
-            content: "> root:~$ ";
-            color: var(--term-green-dim);
+        /* --- Call to Action Section --- */
+        .cta {
+            background: linear-gradient(45deg, var(--accent-color), #f76c82);
+            padding: 80px 0;
+            text-align: center;
+            color: white;
+        }
+        .cta h2 { font-size: 2.8rem; margin-bottom: 20px; }
+        .cta p { font-size: 1.2rem; margin-bottom: 30px; }
+        .btn-light {
+            background-color: var(--text-light);
+            color: var(--accent-color);
+        }
+        .btn-light:hover {
+            background-color: #fff;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* --- Contact --- */
+        .whatsapp-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .btn-whatsapp {
+            background-color: var(--whatsapp-color);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+            transition: all 0.3s;
+        }
+        .btn-whatsapp:hover {
+            transform: scale(1.05);
+            background-color: #20b858;
+        }
+        
+        /* --- Footer --- */
+        footer {
+            background-color: var(--primary-color);
+            color: #ccc;
+            text-align: center;
+            padding: 40px 0;
+        }
+        footer .logo { font-size: 1.8rem; margin-bottom: 15px; display: block; }
+        footer p { margin-bottom: 10px; }
+        footer .footer-info {
+            border-top: 1px solid #333;
+            padding-top: 20px;
+            margin-top: 20px;
+            font-size: 0.9rem;
         }
 
-        h4 {
-            font-size: clamp(13px, 1.6vh + 0.3vw, 24px);
-            margin: 0.5vh 0;
-            text-decoration: underline;
-            color: #88ff88;
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            nav ul { display: none; } /* Simplificado para prototipo */
+            .hero h1 { font-size: 2.8rem; }
+            .process-timeline::after { left: 10px; }
+            .timeline-item { width: 100%; padding-left: 40px; padding-right: 0px; }
+            .timeline-item.right { left: 0%; }
+            .timeline-item::after { left: 1px; }
         }
 
-        p, li {
-            font-size: clamp(11px, 1.4vh + 0.2vw, 20px);
-            line-height: 1.4;
-            margin: 0 0 0.8vh 0;
-            text-align: left;
-        }
-
-        ul {
-            margin: 0;
-            padding-left: 1.2vw;
-            list-style-type: square;
-        }
-
-        li {
-            margin-bottom: 0.6vh;
-        }
-
-        strong {
-            color: var(--term-highlight);
-            text-shadow: var(--term-glow-strong);
-            font-weight: bold;
-        }
-
-        .note {
-            font-style: italic;
-            border-left: 2px solid var(--term-green);
-            padding-left: 1vw;
-            color: #aaffaa;
-            margin-top: 1vh;
-        }
     </style>
 </head>
 <body>
-    <div class="crt-overlay"></div>
-    
-    <div class="content-wrapper">
-        <header>
-            <h1># THE MERCENARY CONTRACT<span class="cursor"></span></h1>
-            <p class="intro">This is NOT auto balance. It is a paid mission. You are treated like a professional who is being hired to fix a broken lobby.</p>
-        </header>
 
-        <div class="grid">
-            <!-- COLUMN 1 -->
-            <div class="col">
-                <div class="section">
-                    <h3>1. The trigger (when it all goes to shit)</h3>
-                    <p>In proyect stardust, 20 minutes is a long time. If the system detects a 3+ player difference for more than 60 seconds (giving people time to rejoin if they crashed), the CONTRACT opens. It does not just grab a random person; it sends a popup to the winning team.</p>
-                </div>
+    <header>
+        <a href="#hero" class="logo">Modelando<span>Ideas</span></a>
+        <nav>
+            <ul>
+                <li><a href="#benefits">Beneficios</a></li>
+                <li><a href="#process">Proceso</a></li>
+                <li><a href="#showcase">Ejemplos</a></li>
+                <li><a href="#contact">Contáctanos</a></li>
+            </ul>
+        </nav>
+    </header>
 
-                <div class="section">
-                    <h3>2. The rewards (why you would actually do it)</h3>
-                    <p>This is where the "I’m losing my rewards" objection gets fixed. If you accept the contract and swap sides, you receive Mercenary Status:</p>
-                    <ul>
-                        <li><strong>Faction loyalty (grind protector)</strong> - You keep progressing the faction you want. If you entered the match as a Rebel to advance that Tier V MC-85, all XP and credits you earn while playing for the Empire still count toward your Rebel progress.</li>
-                        <li><strong>Hazard pay multiplier</strong> - Because we do not want players swapping and then idling for a free win bonus, you are not simply handed the win. Instead, you get a 1.5x multiplier on everything you do after swapping. If you perform exceptionally and carry the losing team, you will earn far more than if you had stayed on the winning side.</li>
-                        <li><strong>Score retention</strong> - Your total damage and kills remain on the board. No reset to zero.</li>
-                        <li><strong>Win bonus safety net</strong> - If you swap and the team still loses, you still receive the "Contract Completion" bonus, equal to a standard win bonus. You are paid for the attempt, not just the result.</li>
-                    </ul>
-                </div>
-            </div>
+    <main>
+        <!-- Hero Section -->
+        <section class="hero" id="hero">
+            <h1>Transformamos tus Bocetos en Realidad Digital</h1>
+            <h2>"De la idea a lo real"</h2>
+            <p>Para emprendedores, estudiantes y creativos de Moquegua. Convertimos tus dibujos, manualidades o ideas en impactantes modelos 3D para publicidad, catálogos y accesorios funcionales. ¡Sin complicaciones y a tu alcance!</p>
+            <a href="#contact" class="btn btn-accent"><i class="fab fa-whatsapp"></i> Inicia tu Proyecto Hoy</a>
+        </section>
 
-            <!-- COLUMN 2 -->
-            <div class="col">
-                <div class="section">
-                    <h3>3. Solving the --skill gap-- and --forced swap-- problems</h3>
-                    <p>Problem: If we force the worst player to swap, they will get farmed harder. If we force the best player, they will be upset because they were performing well.</p>
-                    <ul>
-                        <li><strong>top scorer protection.</strong> The top three players on the winning team are never forced to swap. They earned their dominance; let them keep it.</li>
-                        <li><strong>Selective draft.</strong> If no one volunteers after 30 seconds, the system picks from the middle of the scoreboard. These are players who are contributing but are not currently on a record-breaking run.</li>
-                        <li><strong>Tier aware handling.</strong> In a Tier III/V (8v8), one strong player swapping can change the entire match. In a Tier I/II (12v12), the system may move two people at once to address the imbalance.</li>
-                    </ul>
-                </div>
-
-                <div class="section">
-                    <h3>4. The "mercy" failsafes (choose your ending)</h3>
-                    <p>Sometimes a match is simply too far gone. Even a mercenary can’t save a 2v8 spawncamp. There are two ways to end the suffering without robbing the winners of their achievement:</p>
-                    
-                    <h4>Option A: Mercy timer (passive)</h4>
-                    <ul>
-                        <li>If the player gap is large and the score gap even larger (for example, winners have 3x more points), the match timer accelerates.</li>
-                        <li>Instead of 10 minutes remaining, the clock runs 4x faster.</li>
-                        <li>Why? It ends the match in two minutes instead of ten. The winners still get their complete victory, the losers escape the spawntrap sooner, and the server can reset and scramble teams for a fresh round.</li>
-                    </ul>
+        <!-- Why Choose Us? -->
+        <section id="benefits" class="section">
+            <div class="container">
+                <h2 class="section-title">¿Por Qué Elegirnos?</h2>
+                <p class="section-subtitle">Ofrecemos un servicio pensado en las necesidades de nuestra comunidad: rápido, accesible y colaborativo.</p>
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <i class="fas fa-rocket"></i>
+                        <h3>Entrega Ultra Rápida</h3>
+                        <p>Recibe una vista previa de alta calidad en menos de 48 horas. Tu tiempo es valioso, el nuestro también.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <i class="fas fa-hand-holding-usd"></i>
+                        <h3>Precios Accesibles</h3>
+                        <p>Calidad profesional sin costos elevados. Ideal para presupuestos de estudiantes y pequeños emprendedores.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <i class="fas fa-comments"></i>
+                        <h3>Comunicación Directa</h3>
+                        <p>Trabajamos contigo. Apruebas el diseño, solicitas correcciones y te aseguras de que el resultado sea perfecto.</p>
+                    </div>
                 </div>
             </div>
+        </section>
 
-            <!-- COLUMN 3 -->
-            <div class="col">
-                <div class="section">
-                    <h4>Option B: Extraction vote (active)</h4>
-                    <ul>
-                        <li>At the 10 minute mark, if a team is outnumbered and being crushed, they get a "Call for Extraction" vote.</li>
-                        <li>If the losing team votes [Yes] the match ends instantly.</li>
-                        <li>The winners receive full rewards (they effectively forced a surrender).</li>
-                        <li>The losers keep their XP and are not penalised for leaving early.</li>
-                    </ul>
-                    <p class="note">Note: Combine both. Apply the Mercy timer automatically, and if the losing side is still miserable they can vote for Extraction to end it even faster.</p>
+        <!-- Process Section -->
+        <section id="process" class="section" style="background-color: #f9f9fc;">
+            <div class="container">
+                <h2 class="section-title">Nuestro Proceso Creativo</h2>
+                <p class="section-subtitle">Siete sencillos pasos desde tu idea inicial hasta tu archivo 3D finalizado, listo para usar.</p>
+                <div class="process-timeline">
+                    <div class="timeline-item left">
+                        <div class="timeline-content"><h4><i class="fas fa-pencil-ruler"></i>Paso 1: Contacto e Idea</h4><p>Nos envías tu dibujo, boceto o idea detallada por WhatsApp.</p></div>
+                    </div>
+                    <div class="timeline-item right">
+                        <div class="timeline-content"><h4><i class="fas fa-tasks"></i>Paso 2: Evaluación</h4><p>Nuestro equipo evalúa tu solicitud y define los parámetros del diseño.</p></div>
+                    </div>
+                    <div class="timeline-item left">
+                        <div class="timeline-content"><h4><i class="fas fa-laptop-code"></i>Paso 3: Modelado Digital</h4><p>Damos vida a tu idea usando software libre como Blender o FreeCAD.</p></div>
+                    </div>
+                    <div class="timeline-item right">
+                        <div class="timeline-content"><h4><i class="fas fa-paper-plane"></i>Paso 4: Vista Previa</h4><p>En menos de 48 horas, te enviamos una vista previa de alta calidad.</p></div>
+                    </div>
+                     <div class="timeline-item left">
+                        <div class="timeline-content"><h4><i class="fas fa-check-double"></i>Paso 5: Aprobación</h4><p>Apruebas el diseño o solicitas las correcciones que necesites. ¡Tu satisfacción es primero!</p></div>
+                    </div>
+                    <div class="timeline-item right">
+                        <div class="timeline-content"><h4><i class="fas fa-cogs"></i>Paso 6: Optimización</h4><p>Exportamos y optimizamos el modelo en formatos OBJ, GLTF o JPG.</p></div>
+                    </div>
+                    <div class="timeline-item left">
+                        <div class="timeline-content"><h4><i class="fas fa-download"></i>Paso 7: Entrega Final</h4><p>Recibes el archivo final, listo para tu publicidad, celular o PC.</p></div>
+                    </div>
                 </div>
+            </div>
+        </section>
 
-                <div class="section">
-                    <h3>5. Anti abuse</h3>
-                    <ul>
-                        <li><strong>No team-hopping.</strong> You cannot swap at will to farm Hazard Pay. The system only offers the contract when the server is actually dying.</li>
-                        <li><strong>Ghost slot.</strong> If you ragequit a losing 4v8 and try to rejoin the same server to get on the winning 8 man team, the game recognises your UserID and forces you back into your original slot. No escaping the grind.</li>
-                    </ul>
+        <!-- Showcase Section -->
+        <section id="showcase" class="section">
+            <div class="container">
+                <h2 class="section-title">De un Simple Boceto a un Diseño Impactante</h2>
+                <p class="section-subtitle">Así es como tus ideas cobran vida. Imagina el potencial para tu emprendimiento o proyecto personal.</p>
+                <div class="showcase-content">
+                    <img src="https://i.ibb.co/6Pz3f8m/process-image.jpg" alt="Transformación de boceto a modelo 3D profesional" class="showcase-image">
                 </div>
+            </div>
+        </section>
+        
+        <!-- CTA Section -->
+        <section class="cta">
+            <div class="container">
+                <h2>¿Tienes una idea esperando a ser modelada?</h2>
+                <p>No dejes que se quede en el papel. Es el momento de darle una dimensión profesional.</p>
+                <a href="#contact" class="btn btn-light">¡Sí, quiero empezar ahora!</a>
+            </div>
+        </section>
 
-                <div class="section">
-                    <h3>6. Summary (opinion)</h3>
-                    <ul>
-                        <li><strong>Tier I/II (12v12):</strong> Prioritise the mercenary contract, more bodies help balance play.</li>
-                        <li><strong>Tier III/V (8v8):</strong> Prioritise the mercy timer, skill gaps here are too influential for single swaps to reliably fix matches.</li>
-                        <li><strong>bottom line:</strong> Do not punish the winners / incentivise them to help the losers.</li>
-                    </ul>
+        <!-- Contact Section -->
+        <section id="contact" class="section">
+            <div class="container">
+                 <h2 class="section-title">Contáctanos Directamente</h2>
+                 <p class="section-subtitle">Estamos listos para escucharte. Envíanos un mensaje por WhatsApp y recibe una cotización rápida y sin compromiso. ¡Estamos a un clic de distancia!</p>
+                 <div class="whatsapp-container">
+                    <a href="https://wa.me/51993190939?text=¡Hola!%20Vengo%20de%20la%20página%20web%20y%20quiero%20cotizar%20un%20proyecto%203D." target="_blank" class="btn-whatsapp">
+                        <i class="fab fa-whatsapp"></i> Contactar a Alexis Puma
+                    </a>
+                    <a href="https://wa.me/51929468580?text=¡Hola!%20Vengo%20de%20la%20página%20web%20y%20quiero%20cotizar%20un%20proyecto%203D." target="_blank" class="btn-whatsapp">
+                        <i class="fab fa-whatsapp"></i> Contactar a Axel Apaza
+                    </a>
                 </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <a href="#hero" class="logo">Modelando<span>Ideas</span></a>
+            <p>"De la idea a lo real"</p>
+            <div class="footer-info">
+                <p><strong>Proyecto de Emprendimiento EPT</strong> | I.E.T. Coronel Manuel C. de la Torre - Moquegua</p>
+                <p><strong>Equipo:</strong> Alexis Leandro Puma Mamani & Axel David Apaza Flores | <strong>Docente Asesor:</strong> Jaime Fernandez Chipana</p>
+                <p>© 2026 ModelandoIdeas. Un proyecto hecho con pasión y tecnología.</p>
             </div>
         </div>
-    </div>
+    </footer>
+
 </body>
 </html>
