@@ -1,565 +1,1119 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="ModelandoIdeas ofrece servicio de diseño 3D claro, moderno y fácil de entender para convertir ideas en presentaciones profesionales." />
-  <meta name="theme-color" content="#0f172a" />
-  <title>ModelandoIdeas | Servicio de Diseño 3D</title>
+  <meta name="description" content="ModelandoIdeas transforma tus bocetos e ideas en modelos 3D y presentaciones profesionales en Moquegua, Perú. De la idea a lo real." />
+  <meta name="theme-color" content="#ffffff" />
+  <title>ModelandoIdeas | Hacemos tus ideas realidad</title>
 
+  <!-- Google Fonts para tipografía editorial y limpia -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Iconos de FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <!-- Tailwind CSS CDN para maquetación ágil -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Configuración de Tema Personalizado -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Inter"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              primary: '#2563eb',    /* Azul de Precisión */
+              primaryHover: '#1d4ed8',
+              secondary: '#ea580c',  /* Naranja de Innovación (Mantra) */
+              secondaryHover: '#c2410c',
+              success: '#16a34a',    /* Verde WhatsApp de Confianza */
+              textMain: '#0f172a',   /* Pizarra Profunda para máxima legibilidad */
+              textMuted: '#475569',  /* Gris suave de alto contraste */
+              bgLight: '#f8fafc',    /* Blanco grisáceo para modular secciones */
+              borderLight: '#e2e8f0' /* Líneas divisorias tenues */
+            }
+          },
+          boxShadow: {
+            'premium': '0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 10px -1px rgba(15, 23, 42, 0.03)',
+            'btn': '0 8px 16px -4px rgba(37, 99, 235, 0.2)',
+            'whatsapp': '0 8px 16px -4px rgba(22, 163, 74, 0.25)'
+          }
+        }
+      }
+    }
+  </script>
 
+  <!-- Estilos Adicionales Sutiles -->
   <style>
-    :root{
-      --bg:#0f172a;
-      --bg2:#111c33;
-      --card:rgba(255,255,255,.05);
-      --text:#f8fafc;
-      --muted:#cbd5e1;
-      --line:rgba(255,255,255,.09);
-      --primary:#3b82f6;
-      --secondary:#8b5cf6;
-      --whatsapp:#25D366;
-      --shadow:0 24px 50px rgba(0,0,0,.25);
-      --radius:24px;
-      --max:1200px;
+    /* Efecto de cuadrícula sutil en el Hero como referencia a hojas de dibujo técnico */
+    .cad-grid-bg {
+      background-image: 
+        radial-gradient(circle, #cbd5e1 1px, transparent 1px);
+      background-size: 24px 24px;
+      opacity: 0.3;
     }
-
-    *{box-sizing:border-box;margin:0;padding:0}
-    html{scroll-behavior:smooth;scroll-padding-top:88px}
-    body{
-      font-family:"Inter",sans-serif;
-      background:
-        radial-gradient(circle at 10% 10%, rgba(59,130,246,.18), transparent 25%),
-        radial-gradient(circle at 90% 10%, rgba(139,92,246,.16), transparent 24%),
-        radial-gradient(circle at 70% 100%, rgba(37,211,102,.10), transparent 18%),
-        var(--bg);
-      color:var(--text);
-      line-height:1.6;
-      overflow-x:hidden;
+    
+    /* Pulso interactivo para llamar la atención en botones */
+    .pulse-ring {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
-    a{text-decoration:none;color:inherit}
-    img{max-width:100%;display:block}
-    h1,h2,h3,h4,.brand{font-family:"Poppins",sans-serif}
-    .container{width:min(92%,var(--max));margin:0 auto}
-
-    .btn{
-      display:inline-flex;align-items:center;justify-content:center;gap:.7rem;
-      padding:15px 24px;border-radius:999px;border:0;
-      font-weight:800;cursor:pointer;transition:.2s ease;
-      white-space:nowrap;
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.3); opacity: 0; }
     }
-    .btn:hover{transform:translateY(-2px)}
-    .btn-primary{
-      color:#fff;
-      background:linear-gradient(135deg,var(--primary),var(--secondary));
-      box-shadow:0 16px 34px rgba(59,130,246,.24);
+    
+    /* Personalización de barra de desplazamiento */
+    ::-webkit-scrollbar {
+      width: 10px;
     }
-    .btn-outline{
-      background:rgba(255,255,255,.04);
-      border:1px solid var(--line);
-      color:var(--text);
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
     }
-    .btn-whatsapp{
-      background:var(--whatsapp);
-      color:#fff;
-      box-shadow:0 16px 34px rgba(37,211,102,.22);
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 5px;
     }
-
-    header{
-      position:sticky;top:0;z-index:1000;
-      backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-      background:rgba(15,23,42,.84);
-      border-bottom:1px solid var(--line);
-    }
-    .topbar{
-      min-height:80px;
-      display:flex;align-items:center;justify-content:space-between;gap:18px;
-      padding:14px 0;
-    }
-    .brand{
-      font-size:1.55rem;font-weight:800;letter-spacing:-.5px;
-    }
-    .brand span{
-      background:linear-gradient(135deg,var(--primary),var(--secondary));
-      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
-    }
-    nav ul{
-      list-style:none;display:flex;align-items:center;gap:26px;
-    }
-    nav a{
-      color:var(--muted);font-weight:600;font-size:.96rem;transition:.2s;
-    }
-    nav a:hover{color:var(--primary)}
-    .mobile-note{display:none;color:var(--muted);font-size:.92rem}
-
-    .hero{
-      min-height:calc(100vh - 80px);
-      display:flex;align-items:center;
-      padding:52px 0 24px;
-    }
-    .hero-grid{
-      display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;
-    }
-    .pill{
-      display:inline-flex;align-items:center;gap:.6rem;
-      padding:8px 14px;border-radius:999px;
-      background:rgba(255,255,255,.06);border:1px solid var(--line);
-      color:var(--muted);font-size:.92rem;margin-bottom:18px;
-    }
-    .hero h1{
-      font-size:clamp(2.3rem,5vw,4.4rem);
-      line-height:1.02;letter-spacing:-.8px;
-      margin-bottom:18px;
-    }
-    .hero h1 span{color:var(--primary)}
-    .hero p{
-      color:var(--muted);
-      font-size:1.06rem;
-      max-width:62ch;
-      margin-bottom:28px;
-    }
-    .hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:24px}
-    .hero-points{
-      display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;
-    }
-    .point{
-      background:rgba(255,255,255,.04);
-      border:1px solid var(--line);
-      border-radius:18px;padding:14px 14px 13px;
-    }
-    .point strong{display:block;font-size:.98rem;margin-bottom:4px}
-    .point span{color:var(--muted);font-size:.9rem}
-
-    .hero-card{
-      background:linear-gradient(180deg, rgba(30,41,59,.95), rgba(17,28,51,.95));
-      border:1px solid var(--line);
-      border-radius:30px;padding:18px;box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-    .hero-card img{
-      width:100%;min-height:540px;object-fit:cover;border-radius:22px;
-    }
-
-    .section{padding:92px 0}
-    .section-head{text-align:center;margin-bottom:44px}
-    .section-head h2{
-      font-size:clamp(1.8rem,3vw,2.8rem);
-      letter-spacing:-.5px;margin-bottom:10px;
-    }
-    .section-head p{
-      max-width:74ch;margin:0 auto;color:var(--muted)
-    }
-
-    .grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
-    .card{
-      background:var(--card);border:1px solid var(--line);
-      border-radius:var(--radius);padding:28px;box-shadow:0 10px 28px rgba(0,0,0,.12);
-      transition:.2s ease;
-    }
-    .card:hover{transform:translateY(-5px);border-color:rgba(59,130,246,.28)}
-    .icon{
-      width:58px;height:58px;border-radius:16px;
-      display:grid;place-items:center;
-      background:rgba(59,130,246,.12);color:var(--primary);
-      font-size:1.45rem;margin-bottom:18px;
-    }
-    .card h3{font-size:1.18rem;margin-bottom:10px}
-    .card p{color:var(--muted);font-size:.98rem}
-
-    .steps{
-      background:rgba(255,255,255,.02);
-      border-top:1px solid var(--line);border-bottom:1px solid var(--line);
-    }
-    .steps-grid{
-      display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;
-      counter-reset:step;
-    }
-    .step{
-      position:relative;background:rgba(15,23,42,.72);
-      border:1px solid var(--line);border-radius:var(--radius);
-      padding:28px;min-height:220px;
-    }
-    .step::before{
-      counter-increment:step;content:"0" counter(step);
-      position:absolute;top:16px;right:18px;
-      font-size:2.5rem;font-weight:800;color:rgba(255,255,255,.05);
-      font-family:"Poppins",sans-serif;
-    }
-    .step h3{
-      display:flex;align-items:center;gap:10px;
-      font-size:1.06rem;margin-bottom:12px;
-    }
-    .step h3 i{color:var(--secondary)}
-    .step p{color:var(--muted);font-size:.96rem}
-
-    .portfolio-grid{
-      display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;
-    }
-    .portfolio{
-      overflow:hidden;border-radius:24px;border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
-    }
-    .portfolio img{
-      width:100%;height:290px;object-fit:cover;transition:.45s ease;
-    }
-    .portfolio:hover img{transform:scale(1.05)}
-    .portfolio-content{padding:20px}
-    .portfolio-content h3{font-size:1.08rem;margin-bottom:6px}
-    .portfolio-content p{color:var(--muted);font-size:.95rem}
-
-    .cta{
-      text-align:center;
-      background:
-        linear-gradient(rgba(15,23,42,.88), rgba(15,23,42,.88)),
-        url("https://images.unsplash.com/photo-1618365908648-e71bd5716cba?auto=format&fit=crop&w=1920&q=80") center/cover fixed;
-      border-top:1px solid var(--line);border-bottom:1px solid var(--line);
-    }
-    .cta h2{
-      font-size:clamp(2rem,4vw,3.3rem);margin-bottom:12px;
-    }
-    .cta p{
-      max-width:70ch;margin:0 auto 26px;
-      color:#d7e1f2;font-size:1.06rem;
-    }
-
-    .contact-grid{
-      display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start;
-    }
-    .contact-box{
-      background:var(--card);border:1px solid var(--line);
-      border-radius:26px;padding:28px;
-    }
-    .contact-box h3{font-size:1.25rem;margin-bottom:10px}
-    .contact-box p,.contact-box li{color:var(--muted)}
-    .contact-box ul{list-style:none;display:grid;gap:12px;margin-top:18px}
-    .contact-box li{display:flex;gap:10px;align-items:flex-start}
-    .contact-box li i{color:var(--primary);margin-top:4px}
-    .contact-actions{display:grid;gap:14px;margin-top:18px}
-    .contact-actions .btn{width:100%;padding:16px 22px}
-    .phone{
-      display:inline-block;font-size:1.12rem;font-weight:900;
-      letter-spacing:.2px;color:#fff;
-    }
-    .help{
-      color:var(--muted);font-size:.95rem;margin-top:8px
-    }
-
-    .faq{
-      display:grid;gap:14px;max-width:860px;margin:0 auto;
-    }
-    .faq-item{
-      background:var(--card);border:1px solid var(--line);
-      border-radius:18px;padding:20px 22px;
-    }
-    .faq-item h3{font-size:1.02rem;margin-bottom:8px}
-    .faq-item p{color:var(--muted)}
-
-    footer{
-      background:#0b1120;border-top:1px solid var(--line);
-      padding:50px 0 28px;
-    }
-    .footer-grid{
-      display:grid;grid-template-columns:1.2fr .8fr;gap:20px;align-items:start;margin-bottom:24px;
-    }
-    .footer-grid p,.footer-grid a{color:var(--muted)}
-    .footer-links{display:grid;gap:10px;justify-items:start}
-    .copyright{
-      border-top:1px solid var(--line);padding-top:18px;
-      color:#7b879c;font-size:.9rem;text-align:center;
-    }
-
-    .floating-whatsapp{
-      position:fixed;right:18px;bottom:18px;z-index:1200;
-      display:inline-flex;align-items:center;gap:10px;
-      background:linear-gradient(135deg, var(--whatsapp), #1fb85a);
-      color:#fff;padding:14px 18px;border-radius:999px;
-      box-shadow:0 16px 34px rgba(37,211,102,.25);
-      font-weight:800;
-    }
-
-    @media (max-width:1100px){
-      .hero-grid,.contact-grid,.footer-grid{grid-template-columns:1fr}
-      .hero-points{grid-template-columns:1fr}
-      .grid-3,.steps-grid,.portfolio-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-      .hero-card img{min-height:420px}
-    }
-    @media (max-width:760px){
-      nav{display:none}
-      .mobile-note{display:block}
-      .grid-3,.steps-grid,.portfolio-grid{grid-template-columns:1fr}
-      .hero{min-height:auto;padding-top:38px}
-      .hero-card img{min-height:320px}
-      .btn{width:100%}
-      .floating-whatsapp{left:16px;right:16px;justify-content:center}
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
     }
   </style>
 </head>
-<body>
+<body class="text-brand-textMain bg-white antialiased selection:bg-brand-primary/20 selection:text-brand-primary">
 
-  <header>
-    <div class="container topbar">
-      <a class="brand" href="#inicio">Modelando<span>Ideas</span></a>
+  <!-- -->
+  <!-- HEADER & NAVEGACIÓN -->
+  <header class="sticky top-0 z-50 backdrop-blur-md bg-white/90 border-b border-brand-borderLight transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        <!-- Logo de la marca -->
+        <a href="#inicio" class="flex items-center gap-3 group">
+          <img src="https://raw.githubusercontent.com/ImposibleALX/site/main/logo.png" 
+               alt="Logo de ModelandoIdeas" 
+               class="h-10 w-auto object-contain group-hover:scale-105 transition-transform"
+               onerror="this.src='https://placehold.co/40x40/2563eb/ffffff?text=MI'">
+          <div class="flex flex-col">
+            <span class="font-display font-bold text-lg tracking-tight leading-none text-brand-textMain">
+              Modelando<span class="text-brand-secondary">Ideas</span>
+            </span>
+            <span class="text-[10px] font-mono text-brand-textMuted font-semibold mt-1 tracking-wider uppercase">De la idea a lo real</span>
+          </div>
+        </a>
 
-      <nav aria-label="Navegación principal">
-        <ul>
-          <li><a href="#beneficios">Beneficios</a></li>
-          <li><a href="#proceso">Proceso</a></li>
-          <li><a href="#portafolio">Portafolio</a></li>
-          <li><a href="#contacto">Contacto</a></li>
-        </ul>
-      </nav>
+        <!-- Navegación de Escritorio -->
+        <nav class="hidden md:flex items-center gap-6 lg:gap-8">
+          <a href="#propuesta" class="text-brand-textMuted hover:text-brand-primary font-medium text-sm transition-colors">Propuesta</a>
+          <a href="#soluciones" class="text-brand-textMuted hover:text-brand-primary font-medium text-sm transition-colors">Soluciones 3D</a>
+          <a href="#visor-3d" class="text-brand-textMuted hover:text-brand-primary font-medium text-sm transition-colors">Antes y Después</a>
+          <a href="#proceso" class="text-brand-textMuted hover:text-brand-primary font-medium text-sm transition-colors">Proceso</a>
+          <a href="#cotizador" class="text-brand-textMuted hover:text-brand-primary font-medium text-sm transition-colors">Cotizador</a>
+          <a href="#canvas" class="text-brand-textMuted hover:text-brand-primary font-medium text-sm transition-colors">Lean Canvas</a>
+        </nav>
 
-      <a class="btn btn-primary" href="#contacto"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+        <!-- Botón de Acción Principal -->
+        <div class="hidden md:flex items-center">
+          <a href="https://wa.me/51993190939?text=Hola%20ModelandoIdeas%2C%20vengo%20de%20la%20p%C3%A1gina%20web%20y%20quiero%20consultar%20por%20un%20proyecto%203D." 
+             target="_blank" rel="noopener noreferrer" 
+             class="px-5 py-2.5 rounded-full bg-brand-primary hover:bg-brand-primaryHover text-white font-bold text-xs tracking-wide shadow-btn hover:shadow-lg transition-all duration-300 flex items-center gap-2">
+            <i class="fa-brands fa-whatsapp text-sm"></i>
+            <span>CONSULTA EXPRESS</span>
+          </a>
+        </div>
+
+        <!-- Botón del menú móvil -->
+        <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg text-brand-textMuted hover:text-brand-textMain hover:bg-brand-bgLight transition-all" aria-label="Abrir menú">
+          <i id="menu-icon" class="fa-solid fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Menú móvil desplegable -->
+    <div id="mobile-menu" class="hidden md:hidden border-b border-brand-borderLight bg-white px-4 pt-2 pb-6 space-y-2 shadow-lg">
+      <a href="#propuesta" class="block px-3 py-2.5 rounded-lg text-brand-textMuted hover:text-brand-primary hover:bg-brand-bgLight font-medium text-sm transition-all">Propuesta</a>
+      <a href="#soluciones" class="block px-3 py-2.5 rounded-lg text-brand-textMuted hover:text-brand-primary hover:bg-brand-bgLight font-medium text-sm transition-all">Soluciones 3D</a>
+      <a href="#visor-3d" class="block px-3 py-2.5 rounded-lg text-brand-textMuted hover:text-brand-primary hover:bg-brand-bgLight font-medium text-sm transition-all">Antes y Después</a>
+      <a href="#proceso" class="block px-3 py-2.5 rounded-lg text-brand-textMuted hover:text-brand-primary hover:bg-brand-bgLight font-medium text-sm transition-all">Proceso</a>
+      <a href="#cotizador" class="block px-3 py-2.5 rounded-lg text-brand-textMuted hover:text-brand-primary hover:bg-brand-bgLight font-medium text-sm transition-all">Cotizador</a>
+      <a href="#canvas" class="block px-3 py-2.5 rounded-lg text-brand-textMuted hover:text-brand-primary hover:bg-brand-bgLight font-medium text-sm transition-all">Lean Canvas</a>
+      <hr class="border-brand-borderLight my-2">
+      <a href="https://wa.me/51993190939?text=Hola%20ModelandoIdeas%2C%20deseo%20realizar%20una%20consulta%20directa%20desde%20el%20m%C3%B3vil." 
+         target="_blank" rel="noopener noreferrer" 
+         class="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-brand-success text-white font-bold text-sm shadow-whatsapp">
+        <i class="fa-brands fa-whatsapp text-lg"></i>
+        <span>WhatsApp: +51 993 190 939</span>
+      </a>
     </div>
   </header>
 
-  <main id="inicio">
-    <section class="hero">
-      <div class="container hero-grid">
-        <div>
-          <div class="pill">
+  <!-- -->
+  <!-- HERO SECTION -->
+  <section id="inicio" class="relative pt-8 pb-16 md:py-24 overflow-hidden bg-white">
+    <!-- Cuadrícula técnica sutil -->
+    <div class="absolute inset-0 cad-grid-bg pointer-events-none"></div>
+    <div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-brand-bgLight to-transparent pointer-events-none"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        
+        <!-- Contenido Izquierdo -->
+        <div class="lg:col-span-7 text-left flex flex-col justify-center">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-primary/10 border border-brand-primary/20 text-brand-primary text-xs font-semibold mb-6 w-fit">
             <i class="fa-solid fa-sparkles"></i>
-            Servicio de diseño 3D fácil de entender
+            <span>PROYECTO DE EMPRENDIMIENTO EPT MOQUEGUA</span>
           </div>
 
-          <h1>Tu idea, dibujo o boceto, convertido en <span>3D</span> con una presentación profesional.</h1>
+          <h1 class="font-display font-bold text-4xl sm:text-5xl lg:text-6xl text-brand-textMain leading-[1.15] mb-6 tracking-tight">
+            ¿Tienes un boceto? <br>Nosotros lo <span class="text-brand-secondary">diseñamos en 3D</span>
+          </h1>
 
-          <p>
-            En ModelandoIdeas te ayudamos a mostrar tu proyecto de forma clara, moderna y ordenada.
-            Ideal para estudiantes, emprendedores, negocios y personas que necesitan una presentación visual mejor hecha.
+          <p class="text-brand-textMuted text-base sm:text-lg max-w-xl mb-8 leading-relaxed">
+            Convertimos tus dibujos a mano, esquemas rápidos o ideas creativas en modelados 3D limpios, lógicos y altamente visuales. Una solución puntual, económica y adaptada a la realidad local de Moquegua.
           </p>
 
-          <div class="hero-actions">
-            <a class="btn btn-whatsapp" href="https://wa.me/51993190939?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20el%20servicio%203D." target="_blank" rel="noopener noreferrer">
-              <i class="fa-brands fa-whatsapp"></i> Escribir por WhatsApp
+          <!-- Acciones de Botones -->
+          <div class="flex flex-col sm:flex-row items-center gap-4 mb-8">
+            <a href="https://wa.me/51993190939?text=Hola%20ModelandoIdeas%2C%20quiero%20empezar%20mi%20dise%C3%B1o%203D%20ahora." 
+               target="_blank" rel="noopener noreferrer" 
+               class="w-full sm:w-auto px-8 py-4 rounded-xl bg-brand-primary hover:bg-brand-primaryHover text-white font-extrabold text-sm text-center shadow-btn hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-2">
+              <i class="fa-brands fa-whatsapp text-lg"></i>
+              <span>Iniciar Mi Proyecto Hoy</span>
             </a>
-            <a class="btn btn-outline" href="#proceso">
-              <i class="fa-solid fa-circle-play"></i> Ver cómo funciona
+            <a href="#visor-3d" class="w-full sm:w-auto px-8 py-4 rounded-xl border border-brand-borderLight hover:border-brand-primary/30 bg-white text-brand-textMain font-semibold text-sm text-center transition-all flex items-center justify-center gap-2 shadow-sm hover:shadow-md">
+              <i class="fa-solid fa-circle-play text-brand-primary"></i>
+              <span>Ver Ejemplo de Antes/Después</span>
             </a>
           </div>
 
-          <div class="hero-points">
-            <div class="point">
-              <strong>Texto simple</strong>
-              <span>Para que todos lo entiendan fácil.</span>
+          <!-- Pilares de Confianza y Mantra -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 border-t border-brand-borderLight pt-8">
+            <div class="p-3.5 rounded-xl bg-brand-bgLight border border-brand-borderLight">
+              <span class="block font-display font-bold text-sm text-brand-secondary uppercase tracking-wider">Mantra</span>
+              <span class="text-xs text-brand-textMuted font-medium">"De la idea a lo real"</span>
             </div>
-            <div class="point">
-              <strong>Un solo contacto</strong>
-              <span>Solo WhatsApp al +51 993 190 939.</span>
+            <div class="p-3.5 rounded-xl bg-brand-bgLight border border-brand-borderLight">
+              <span class="block font-display font-bold text-sm text-brand-primary uppercase tracking-wider">Entrega</span>
+              <span class="text-xs text-brand-textMuted font-medium">En menos de 48 horas</span>
             </div>
-            <div class="point">
-              <strong>Atención directa</strong>
-              <span>Escribe y te respondemos por WhatsApp.</span>
-            </div>
-          </div>
-
-          <p class="mobile-note" style="margin-top:18px;">
-            Contacto único: <strong>+51 993 190 939</strong>
-          </p>
-        </div>
-
-        <div class="hero-card">
-          <img src="https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=1200&q=80" alt="Persona trabajando en modelado 3D en computadora">
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="beneficios">
-      <div class="container">
-        <div class="section-head">
-          <h2>¿Qué te ofrecemos?</h2>
-          <p>Un servicio claro, útil y bien presentado, pensado para que el resultado se vea serio y profesional.</p>
-        </div>
-
-        <div class="grid-3">
-          <article class="card">
-            <div class="icon"><i class="fa-solid fa-clock"></i></div>
-            <h3>Atención rápida</h3>
-            <p>Te respondemos por WhatsApp y te guiamos para empezar sin enredos.</p>
-          </article>
-
-          <article class="card">
-            <div class="icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-            <h3>Presentación bonita</h3>
-            <p>Diseño visual limpio, moderno y agradable para mostrar tu idea con mejor impacto.</p>
-          </article>
-
-          <article class="card">
-            <div class="icon"><i class="fa-solid fa-people-arrows"></i></div>
-            <h3>Trato cercano</h3>
-            <p>Te acompañamos durante el proceso para que el resultado quede como lo necesitas.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section steps" id="proceso">
-      <div class="container">
-        <div class="section-head">
-          <h2>Cómo funciona</h2>
-          <p>Un proceso sencillo en 4 pasos para transformar tu idea en un diseño 3D claro y listo para usar.</p>
-        </div>
-
-        <div class="steps-grid">
-          <article class="step">
-            <h3><i class="fa-solid fa-lightbulb"></i> 1. Nos compartes tu idea</h3>
-            <p>Envíanos una foto, dibujo, referencia o una explicación corta de lo que quieres hacer.</p>
-          </article>
-          <article class="step">
-            <h3><i class="fa-solid fa-cubes"></i> 2. Creamos el modelo</h3>
-            <p>Convertimos tu idea en una propuesta 3D ordenada, clara y profesional.</p>
-          </article>
-          <article class="step">
-            <h3><i class="fa-solid fa-eye"></i> 3. Revisamos contigo</h3>
-            <p>Te mostramos avances para hacer ajustes antes de terminar el trabajo.</p>
-          </article>
-          <article class="step">
-            <h3><i class="fa-solid fa-circle-check"></i> 4. Entregamos el resultado</h3>
-            <p>Recibes el trabajo final listo para presentar, compartir o imprimir.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="portafolio">
-      <div class="container">
-        <div class="section-head">
-          <h2>Ejemplos visuales</h2>
-          <p>Una vista del estilo de trabajo que podemos preparar para tu proyecto.</p>
-        </div>
-
-        <div class="portfolio-grid">
-          <article class="portfolio">
-            <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=900&q=80" alt="Boceto en libreta">
-            <div class="portfolio-content">
-              <h3>1. Idea inicial</h3>
-              <p>Partimos de un boceto o referencia sencilla.</p>
-            </div>
-          </article>
-
-          <article class="portfolio">
-            <img src="https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?auto=format&fit=crop&w=900&q=80" alt="Diseño digital en computadora">
-            <div class="portfolio-content">
-              <h3>2. Trabajo digital</h3>
-              <p>Armamos una propuesta limpia y bien organizada.</p>
-            </div>
-          </article>
-
-          <article class="portfolio">
-            <img src="https://images.unsplash.com/photo-1618365908648-e71bd5716cba?auto=format&fit=crop&w=900&q=80" alt="Render final">
-            <div class="portfolio-content">
-              <h3>3. Resultado final</h3>
-              <p>Presentación más clara, moderna y atractiva.</p>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section cta">
-      <div class="container">
-        <h2>¿Quieres mostrar tu idea de forma más clara?</h2>
-        <p>
-          Escríbenos por WhatsApp y te ayudamos con tu proyecto de manera simple y directa.
-          Todo el contacto se hace solo con este número.
-        </p>
-        <a class="btn btn-whatsapp" href="https://wa.me/51993190939?text=Hola%2C%20quiero%20cotizar%20un%20servicio%203D." target="_blank" rel="noopener noreferrer">
-          <i class="fa-brands fa-whatsapp"></i> Hablar por WhatsApp
-        </a>
-      </div>
-    </section>
-
-    <section class="section" id="contacto">
-      <div class="container">
-        <div class="section-head">
-          <h2>Contacto</h2>
-          <p>Usa este número para escribir por WhatsApp. No se incluye correo ni otros contactos.</p>
-        </div>
-
-        <div class="contact-grid">
-          <div class="contact-box">
-            <h3>Contacto directo</h3>
-            <p>Este es el único número que debes usar:</p>
-            <p style="margin-top:8px;"><span class="phone">+51 993 190 939</span></p>
-            <p class="help">Solo mensajes por WhatsApp.</p>
-
-            <ul>
-              <li><i class="fa-brands fa-whatsapp"></i> Mensajes por WhatsApp.</li>
-              <li><i class="fa-solid fa-circle-info"></i> Atención clara y fácil de entender.</li>
-              <li><i class="fa-solid fa-message"></i> Respuesta directa al mismo chat.</li>
-            </ul>
-          </div>
-
-          <div class="contact-box">
-            <h3>Acciones rápidas</h3>
-            <div class="contact-actions">
-              <a class="btn btn-whatsapp" href="https://wa.me/51993190939?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20el%20servicio%203D." target="_blank" rel="noopener noreferrer">
-                <i class="fa-brands fa-whatsapp"></i> WhatsApp: +51 993 190 939
-              </a>
-              <a class="btn btn-outline" href="#beneficios">
-                <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver beneficios
-              </a>
+            <div class="col-span-2 sm:col-span-1 p-3.5 rounded-xl bg-brand-bgLight border border-brand-borderLight">
+              <span class="block font-display font-bold text-sm text-brand-success uppercase tracking-wider">Origen</span>
+              <span class="text-xs text-brand-textMuted font-medium">Moquegua, Perú</span>
             </div>
           </div>
         </div>
-      </div>
-    </section>
 
-    <section class="section">
-      <div class="container">
-        <div class="section-head">
-          <h2>Preguntas frecuentes</h2>
-          <p>Respuestas simples para que cualquier persona entienda el servicio sin complicarse.</p>
-        </div>
-
-        <div class="faq">
-          <div class="faq-item">
-            <h3>¿Qué hacen exactamente?</h3>
-            <p>Transformamos ideas, dibujos o referencias en una propuesta 3D clara y profesional.</p>
-          </div>
-          <div class="faq-item">
-            <h3>¿A quién va dirigido?</h3>
-            <p>A estudiantes, emprendedores, negocios pequeños y personas que necesitan presentar mejor su idea.</p>
-          </div>
-          <div class="faq-item">
-            <h3>¿Cómo contacto con ustedes?</h3>
-            <p>Solo por WhatsApp al número <strong>+51 993 190 939</strong>.</p>
+        <!-- Columna Derecha: Imagen del Prototipo Final -->
+        <div class="lg:col-span-5 relative">
+          <div class="absolute -inset-2 rounded-2xl bg-brand-primary/5 blur-lg pointer-events-none"></div>
+          <div class="relative rounded-2xl border border-brand-borderLight bg-white p-3 shadow-premium overflow-hidden">
+            <!-- Barra superior del visualizador -->
+            <div class="flex items-center justify-between px-2 pb-2 mb-2 border-b border-brand-borderLight text-[10px] font-mono text-brand-textMuted">
+              <span class="flex items-center gap-1.5"><i class="fa-solid fa-cube text-brand-secondary"></i> PROTOTIPO_FINAL_EPT.PNG</span>
+              <span class="text-brand-primary font-bold">100% DIGITAL</span>
+            </div>
+            <!-- Render/Imagen de muestra -->
+            <div class="relative rounded-lg overflow-hidden bg-brand-bgLight group">
+              <img src="https://raw.githubusercontent.com/ImposibleALX/site/main/productimagefinal.png" 
+                   alt="Prototipo de ModelandoIdeas - Del plano al 3D" 
+                   class="w-full h-auto object-cover block transition-transform duration-500 group-hover:scale-102"
+                   onerror="this.src='https://placehold.co/500x400/f8fafc/2563eb?text=ModelandoIdeas+Moquegua'">
+            </div>
           </div>
         </div>
-      </div>
-    </section>
-  </main>
 
-  <footer>
-    <div class="container footer-grid">
-      <div>
-        <a class="brand" href="#inicio">Modelando<span>Ideas</span></a>
-        <p style="margin-top:14px;">Servicio de diseño 3D con una presentación moderna, clara y fácil de entender.</p>
-        <p style="margin-top:10px;">Desarrollado en Moquegua, Perú.</p>
-      </div>
-      <div class="footer-links">
-        <a href="#beneficios">Beneficios</a>
-        <a href="#proceso">Proceso</a>
-        <a href="#portafolio">Portafolio</a>
-        <a href="#contacto">Contacto</a>
       </div>
     </div>
+  </section>
 
-    <div class="container copyright">
-      <p><strong>Proyecto de Emprendimiento EPT</strong> | I.E.T. Coronel Manuel C. de la Torre</p>
-      <p style="margin-top:6px;">Equipo: Alexis Leandro Puma Mamani &amp; Axel David Apaza Flores | Docente asesor: Jaime Fernández Chipana</p>
-      <p style="margin-top:12px;">© 2026 ModelandoIdeas. Todos los derechos reservados.</p>
+  <!-- -->
+  <!-- SITUACIÓN PROBLEMÁTICA Y EL RETO (Design Thinking) -->
+  <section id="propuesta" class="py-16 md:py-20 border-t border-brand-borderLight bg-brand-bgLight">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <span class="text-brand-secondary font-bold text-xs uppercase tracking-widest block mb-2">Planteamiento del Proyecto</span>
+        <h2 class="font-display font-bold text-3xl sm:text-4xl text-brand-textMain tracking-tight">
+          Entendiendo las Necesidades de Moquegua
+        </h2>
+        <div class="w-16 h-1 bg-brand-secondary mx-auto mt-4 rounded-full"></div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+        <!-- Tarjeta de Situación Problemática -->
+        <div class="bg-white p-8 rounded-2xl border border-brand-borderLight shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-brand-secondary/10 text-brand-secondary flex items-center justify-center text-lg mb-6">
+              <i class="fa-solid fa-circle-exclamation"></i>
+            </div>
+            <h3 class="font-display font-bold text-xl text-brand-textMain mb-4">El Problema de Nuestra Comunidad</h3>
+            <p class="text-brand-textMuted text-sm leading-relaxed mb-4">
+              En Moquegua, observamos que pequeños emprendedores, artesanos y estudiantes tienen excelentes ideas creativas plasmadas solo en su imaginación o en papel.
+            </p>
+            <p class="text-brand-textMuted text-sm leading-relaxed">
+              Carecen de los conocimientos en software especializado para convertirlas en archivos 3D modernos. Esto les impide crear publicidad tridimensional para sus catálogos, organizar sus escritorios o validar sus manualidades antes de producirlas.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-brand-borderLight flex items-center gap-2.5 text-xs text-brand-textMuted">
+            <i class="fa-solid fa-users text-brand-primary"></i>
+            <span>Afecta a microcomerciantes y creativos locales.</span>
+          </div>
+        </div>
+
+        <!-- Tarjeta de Desafío Redactado -->
+        <div class="bg-white p-8 rounded-2xl border border-brand-borderLight shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-brand-primary/10 text-brand-primary flex items-center justify-center text-lg mb-6">
+              <i class="fa-solid fa-compass"></i>
+            </div>
+            <h3 class="font-display font-bold text-xl text-brand-textMain mb-4">Nuestro Reto Desafiante (POV)</h3>
+            <div class="p-4 rounded-xl bg-brand-bgLight border-l-4 border-brand-primary mb-4">
+              <p class="italic text-brand-textMain font-medium text-sm leading-relaxed">
+                "¿Cómo podríamos nosotros ofrecer un servicio de modelado digital 3D, puntual y accesible, que transforme las ideas de los emprendedores y estudiantes de Moquegua en archivos listos para publicidad, catálogos y accesorios funcionales?"
+              </p>
+            </div>
+            <p class="text-brand-textMuted text-sm leading-relaxed">
+              Nos enfocamos estrictamente en el diseño digital por pedido, lo que elimina los altos costos de la maquinaria física de fabricación 3D y nos permite adaptarnos a la economía local.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-brand-borderLight flex items-center gap-2.5 text-xs text-brand-textMuted">
+            <i class="fa-solid fa-lightbulb text-brand-secondary animate-pulse"></i>
+            <span>Solución 100% digital a bajo costo.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- -->
+  <!-- SOLUCIONES Y CATEGORÍAS 3D -->
+  <section id="soluciones" class="py-16 md:py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Encabezado de Sección -->
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-brand-primary font-bold text-xs uppercase tracking-widest block mb-2">¿Qué Hacemos?</span>
+        <h2 class="font-display font-bold text-3xl sm:text-4xl text-brand-textMain tracking-tight">
+          Nuestras 3 Líneas de Solución Digital
+        </h2>
+        <div class="w-16 h-1 bg-brand-primary mx-auto mt-4 rounded-full"></div>
+        <p class="text-brand-textMuted text-sm sm:text-base mt-4 leading-relaxed">
+          Diseños estructurados bajo tres pilares fundamentales que responden directamente a las entrevistas reales del proyecto.
+        </p>
+      </div>
+
+      <!-- Grid de Soluciones -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Solución 1 -->
+        <div class="group bg-white rounded-2xl border border-brand-borderLight p-6 sm:p-8 hover:border-brand-primary/30 hover:shadow-premium transition-all duration-300 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-brand-primary/5 text-brand-primary flex items-center justify-center text-xl mb-6 group-hover:scale-105 transition-transform">
+              <i class="fa-solid fa-bullhorn"></i>
+            </div>
+            <h3 class="font-display font-bold text-lg text-brand-textMain mb-3 group-hover:text-brand-primary transition-colors">
+              Publicidad y Logos 3D
+            </h3>
+            <p class="text-brand-textMuted text-xs sm:text-sm leading-relaxed mb-4">
+              Modelamos logotipos corporativos tridimensionales y envases para marketing digital de emprendimientos en Moquegua. Perfectos para publicar en redes sociales y destacar frente a la competencia.
+            </p>
+          </div>
+          <span class="text-xs font-mono font-bold text-brand-primary tracking-wide block pt-4 border-t border-brand-borderLight/60">
+            DESDE S/. 25.00
+          </span>
+        </div>
+
+        <!-- Solución 2 -->
+        <div class="group bg-white rounded-2xl border border-brand-borderLight p-6 sm:p-8 hover:border-brand-secondary/30 hover:shadow-premium transition-all duration-300 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-brand-secondary/5 text-brand-secondary flex items-center justify-center text-xl mb-6 group-hover:scale-105 transition-transform">
+              <i class="fa-solid fa-cube"></i>
+            </div>
+            <h3 class="font-display font-bold text-lg text-brand-textMain mb-3 group-hover:text-brand-secondary transition-colors">
+              Accesorios de Escritorio
+            </h3>
+            <p class="text-brand-textMuted text-xs sm:text-sm leading-relaxed mb-4">
+              Diseño digital y modelado ergonómico de accesorios utilitarios como soportes para celulares, llaveros personalizados y peinetas a medida para organizar tu espacio físico.
+            </p>
+          </div>
+          <span class="text-xs font-mono font-bold text-brand-secondary tracking-wide block pt-4 border-t border-brand-borderLight/60">
+            DESDE S/. 15.00
+          </span>
+        </div>
+
+        <!-- Solución 3 -->
+        <div class="group bg-white rounded-2xl border border-brand-borderLight p-6 sm:p-8 hover:border-brand-success/10 hover:shadow-premium transition-all duration-300 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-brand-success/5 text-brand-success flex items-center justify-center text-xl mb-6 group-hover:scale-105 transition-transform">
+              <i class="fa-solid fa-gifts"></i>
+            </div>
+            <h3 class="font-display font-bold text-lg text-brand-textMain mb-3 group-hover:text-brand-success transition-colors">
+              Catálogos de Manualidades
+            </h3>
+            <p class="text-brand-textMuted text-xs sm:text-sm leading-relaxed mb-4">
+              Modelamos de forma fotorrealista manualidades y artesanías locales (como rosas eternas de limpiapipas). Tus clientes podrán visualizar cada detalle antes de que las fabriques.
+            </p>
+          </div>
+          <span class="text-xs font-mono font-bold text-brand-success tracking-wide block pt-4 border-t border-brand-borderLight/60">
+            DESDE S/. 20.00
+          </span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- -->
+  <!-- SECCIÓN VISOR INTERACTIVO: ANTES Y DESPUÉS -->
+  <section id="visor-3d" class="py-16 md:py-20 bg-brand-bgLight border-y border-brand-borderLight">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Detalle Izquierdo -->
+        <div class="lg:col-span-5">
+          <span class="text-brand-secondary font-bold text-xs uppercase tracking-widest block mb-2">Caso de Estudio Real</span>
+          <h2 class="font-display font-bold text-3xl sm:text-4xl text-brand-textMain mb-6 leading-tight">
+            De un boceto a papel a un render pulido
+          </h2>
+          <p class="text-brand-textMuted text-sm sm:text-base leading-relaxed mb-6">
+            A la derecha se visualiza un ejemplo real de nuestro portafolio técnico. Toca o haz clic sobre los números interactivos para explorar las etapas del flujo de diseño que aplicamos a cada uno de tus encargos.
+          </p>
+
+          <!-- Listado de etapas con diseño minimalista -->
+          <div class="space-y-4 border-l-2 border-brand-borderLight pl-6">
+            <div class="relative">
+              <span class="absolute -left-[31px] top-1 w-3 h-3 rounded-full bg-brand-primary border border-white"></span>
+              <h4 class="text-brand-textMain font-bold text-sm">Etapa 1: Idea Inicial</h4>
+              <p class="text-brand-textMuted text-xs mt-1">El cliente comparte un boceto simple o plano de referencia hecho a mano.</p>
+            </div>
+            <div class="relative">
+              <span class="absolute -left-[31px] top-1 w-3 h-3 rounded-full bg-brand-secondary border border-white"></span>
+              <h4 class="text-brand-textMain font-bold text-sm">Etapa 2: Estructura 3D</h4>
+              <p class="text-brand-textMuted text-xs mt-1">Calculamos proporciones y geometrías mediante software paramétrico.</p>
+            </div>
+            <div class="relative">
+              <span class="absolute -left-[31px] top-1 w-3 h-3 rounded-full bg-brand-success border border-white"></span>
+              <h4 class="text-brand-textMain font-bold text-sm">Etapa 3: Iluminación y Textura</h4>
+              <p class="text-brand-textMuted text-xs mt-1">Aplicamos materiales y luces realistas listos para su uso comercial.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contenedor del Visor Interactivo Derecho -->
+        <div class="lg:col-span-7">
+          <div class="bg-white rounded-2xl border border-brand-borderLight p-4 shadow-premium relative overflow-hidden">
+            <!-- Barra superior estilo CAD -->
+            <div class="flex items-center justify-between pb-3 mb-3 border-b border-brand-borderLight text-[10px] font-mono text-brand-textMuted">
+              <span class="flex items-center gap-1.5"><i class="fa-solid fa-sliders text-brand-primary"></i> EXPLORADOR_PROPIEDADES.SYS</span>
+              <span class="px-2 py-0.5 rounded bg-brand-bgLight text-[9px] border border-brand-borderLight uppercase font-semibold">Previsualización</span>
+            </div>
+
+            <!-- Contenedor de la Imagen y Hotspots -->
+            <div class="relative rounded-xl overflow-hidden bg-brand-bgLight border border-brand-borderLight">
+              <!-- Grid Técnico de Fondo sutil sobre la imagen -->
+              <div class="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none z-10 opacity-60"></div>
+              
+              <!-- Hotspot 1 -->
+              <div class="absolute top-[28%] left-[24%] z-20">
+                <div class="relative flex items-center justify-center">
+                  <span class="animate-ping absolute inline-flex h-5 w-5 rounded-full bg-brand-primary/40 opacity-75"></span>
+                  <button onclick="toggleHotspot(1)" class="relative inline-flex rounded-full h-8 w-8 bg-brand-primary text-white text-xs font-bold items-center justify-center hover:scale-105 active:scale-95 transition-all shadow shadow-brand-primary/30" aria-label="Información Hotspot 1">
+                    1
+                  </button>
+                </div>
+                <!-- Tooltip 1 -->
+                <div id="tooltip-1" class="hidden absolute left-10 -top-4 w-52 bg-white border border-brand-borderLight p-3.5 rounded-xl shadow-premium text-xs z-30">
+                  <strong class="block text-brand-primary mb-1">El Boceto Original</strong>
+                  <p class="text-brand-textMuted text-[11px] leading-relaxed">
+                    Identificamos las medidas, dimensiones clave y la estética que deseas rescatar.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Hotspot 2 -->
+              <div class="absolute top-[68%] left-[72%] z-20">
+                <div class="relative flex items-center justify-center">
+                  <span class="animate-ping absolute inline-flex h-5 w-5 rounded-full bg-brand-secondary/40 opacity-75"></span>
+                  <button onclick="toggleHotspot(2)" class="relative inline-flex rounded-full h-8 w-8 bg-brand-secondary text-white text-xs font-bold items-center justify-center hover:scale-105 active:scale-95 transition-all shadow shadow-brand-secondary/30" aria-label="Información Hotspot 2">
+                    2
+                  </button>
+                </div>
+                <!-- Tooltip 2 -->
+                <div id="tooltip-2" class="hidden absolute right-10 -top-4 w-52 bg-white border border-brand-borderLight p-3.5 rounded-xl shadow-premium text-xs z-30">
+                  <strong class="block text-brand-secondary mb-1">La Estructura 3D Final</strong>
+                  <p class="text-brand-textMuted text-[11px] leading-relaxed">
+                    Modelo completamente limpio y optimizado, listo para usarse en redes sociales o catálogos web.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Imagen de comparativa -->
+              <img src="https://raw.githubusercontent.com/ImposibleALX/site/main/productimagefinal.png" 
+                   alt="Demostración comparativa antes y después" 
+                   class="w-full h-auto object-cover relative z-0"
+                   onerror="this.src='https://placehold.co/700x450/f8fafc/2563eb?text=Demostracion+ModelandoIdeas'">
+            </div>
+
+            <p class="text-center text-xs text-brand-textMuted mt-3 font-mono">
+              <i class="fa-solid fa-info-circle text-brand-primary"></i> Haz clic en los botones flotantes para descubrir los detalles.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- -->
+  <!-- CÓMO TRABAJAMOS (Proceso de Producción en 6 Pasos) -->
+  <section id="proceso" class="py-16 md:py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Encabezado de Sección -->
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-brand-secondary font-bold text-xs uppercase tracking-widest block mb-2">Metodología de Trabajo</span>
+        <h2 class="font-display font-bold text-3xl sm:text-4xl text-brand-textMain tracking-tight">
+          Tu Idea a la Realidad en 6 Pasos Sencillos
+        </h2>
+        <div class="w-16 h-1 bg-brand-secondary mx-auto mt-4 rounded-full"></div>
+      </div>
+
+      <!-- Timeline/Pasos Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        <!-- Paso 1 -->
+        <div class="p-6 rounded-2xl border border-brand-borderLight bg-brand-bgLight flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-2xl font-display font-black text-brand-primary/20">01</span>
+              <div class="w-8 h-8 rounded-lg bg-brand-primary/10 text-brand-primary flex items-center justify-center text-sm"><i class="fa-solid fa-message"></i></div>
+            </div>
+            <h4 class="font-display font-bold text-sm text-brand-textMain mb-2">Contacto Inicial</h4>
+            <p class="text-brand-textMuted text-xs leading-relaxed">
+              El cliente se contacta y envía su dibujo, boceto inicial o explicación de la idea a nuestro WhatsApp único.
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 2 -->
+        <div class="p-6 rounded-2xl border border-brand-borderLight bg-brand-bgLight flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-2xl font-display font-black text-brand-primary/20">02</span>
+              <div class="w-8 h-8 rounded-lg bg-brand-primary/10 text-brand-primary flex items-center justify-center text-sm"><i class="fa-solid fa-calculator"></i></div>
+            </div>
+            <h4 class="font-display font-bold text-sm text-brand-textMain mb-2">Evaluación del Equipo</h4>
+            <p class="text-brand-textMuted text-xs leading-relaxed">
+              Nuestro equipo analiza la factibilidad de tu boceto y define las propiedades y parámetros geométricos en 3D.
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 3 -->
+        <div class="p-6 rounded-2xl border border-brand-borderLight bg-brand-bgLight flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-2xl font-display font-black text-brand-primary/20">03</span>
+              <div class="w-8 h-8 rounded-lg bg-brand-primary/10 text-brand-primary flex items-center justify-center text-sm"><i class="fa-solid fa-cubes"></i></div>
+            </div>
+            <h4 class="font-display font-bold text-sm text-brand-textMain mb-2">Modelado Digital</h4>
+            <p class="text-brand-textMuted text-xs leading-relaxed">
+              Modelamos tridimensionalmente la pieza utilizando programas de software libre como Tinkercad, FreeCAD o Blender.
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 4 -->
+        <div class="p-6 rounded-2xl border border-brand-borderLight bg-brand-bgLight flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-2xl font-display font-black text-brand-primary/20">04</span>
+              <div class="w-8 h-8 rounded-lg bg-brand-primary/10 text-brand-primary flex items-center justify-center text-sm"><i class="fa-solid fa-eye"></i></div>
+            </div>
+            <h4 class="font-display font-bold text-sm text-brand-textMain mb-2">Vista Previa de Calidad</h4>
+            <p class="text-brand-textMuted text-xs leading-relaxed">
+              Enviamos una visualización de alta definición de la pieza en menos de 48 horas laborables para tu revisión inicial.
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 5 -->
+        <div class="p-6 rounded-2xl border border-brand-borderLight bg-brand-bgLight flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-2xl font-display font-black text-brand-primary/20">05</span>
+              <div class="w-8 h-8 rounded-lg bg-brand-primary/10 text-brand-primary flex items-center justify-center text-sm"><i class="fa-solid fa-arrows-spin"></i></div>
+            </div>
+            <h4 class="font-display font-bold text-sm text-brand-textMain mb-2">Correcciones Técnicas</h4>
+            <p class="text-brand-textMuted text-xs leading-relaxed">
+              El cliente aprueba el avance o solicita modificaciones de color, textura o proporción geométrica directamente.
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 6 -->
+        <div class="p-6 rounded-2xl border border-brand-borderLight bg-brand-bgLight flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-2xl font-display font-black text-brand-primary/20">06</span>
+              <div class="w-8 h-8 rounded-lg bg-brand-primary/10 text-brand-primary flex items-center justify-center text-sm"><i class="fa-solid fa-circle-check"></i></div>
+            </div>
+            <h4 class="font-display font-bold text-sm text-brand-textMain mb-2">Entrega y Descarga</h4>
+            <p class="text-brand-textMuted text-xs leading-relaxed">
+              Exportamos tu modelo en formatos ligeros (.OBJ, .GLTF o renders .JPG) listos para tu celular o computadora.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- -->
+  <!-- COTIZADOR DE PRECIOS INTERACTIVO -->
+  <section id="cotizador" class="py-16 md:py-20 bg-brand-bgLight border-y border-brand-borderLight">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-brand-primary font-bold text-xs uppercase tracking-widest block mb-2">Estimador de Presupuestos</span>
+        <h2 class="font-display font-bold text-3xl sm:text-4xl text-brand-textMain tracking-tight">
+          Cotiza tu Idea al Instante
+        </h2>
+        <div class="w-16 h-1 bg-brand-primary mx-auto mt-4 rounded-full"></div>
+        <p class="text-brand-textMuted text-sm sm:text-base mt-4">
+          Calcula un presupuesto aproximado según la complejidad del modelado y genera de inmediato tu enlace personalizado para iniciar por WhatsApp.
+        </p>
+      </div>
+
+      <div class="max-w-3xl mx-auto bg-white border border-brand-borderLight p-6 sm:p-10 rounded-3xl shadow-premium">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+          
+          <!-- Tipo de Modelado -->
+          <div>
+            <label for="calc-type" class="block text-xs font-bold uppercase tracking-wider text-brand-textMain mb-3">
+              1. Nivel de Complejidad
+            </label>
+            <select id="calc-type" onchange="actualizarCotizacion()" class="w-full bg-brand-bgLight border border-brand-borderLight text-brand-textMain rounded-xl px-4 py-3.5 focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/15 transition-all text-sm font-medium">
+              <option value="simple" selected>Simple - Llaveros / Accesorios (S/. 15.00)</option>
+              <option value="intermedio">Intermedio - Prototipos / Manualidades (S/. 20.00)</option>
+              <option value="avanzado">Avanzado - Logos / Envases Corporativos (S/. 25.00)</option>
+            </select>
+          </div>
+
+          <!-- Opciones de Texturizado -->
+          <div>
+            <label for="calc-add" class="block text-xs font-bold uppercase tracking-wider text-brand-textMain mb-3">
+              2. Texturas o Colores Extra
+            </label>
+            <select id="calc-add" onchange="actualizarCotizacion()" class="w-full bg-brand-bgLight border border-brand-borderLight text-brand-textMain rounded-xl px-4 py-3.5 focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/15 transition-all text-sm font-medium">
+              <option value="no" selected>No requiere texturas complejas (S/. 0.00)</option>
+              <option value="si">Variaciones de color o texturas personalizadas (+S/. 5.00)</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Panel de Resultados de Cálculo -->
+        <div class="p-6 rounded-2xl bg-brand-bgLight border border-brand-borderLight flex flex-col sm:flex-row items-center justify-between gap-6 mb-8">
+          <div>
+            <span class="text-xs text-brand-textMuted uppercase font-semibold block mb-1">Costo Estimado</span>
+            <div class="text-3xl font-display font-extrabold text-brand-textMain flex items-center gap-2">
+              <span class="text-brand-primary">S/.</span>
+              <span id="price-output">15.00</span>
+            </div>
+          </div>
+          
+          <div class="text-left sm:text-right">
+            <span class="text-xs text-brand-textMuted uppercase font-semibold block mb-1">Tiempo de Entrega</span>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-secondary/10 border border-brand-secondary/20 text-brand-secondary text-xs font-bold mt-1">
+              <i class="fa-solid fa-clock"></i> Menos de 48 horas
+            </span>
+          </div>
+        </div>
+
+        <!-- Botón Enlace Dinámico a WhatsApp -->
+        <div class="text-center">
+          <a id="whatsapp-calc-link" href="#" target="_blank" rel="noopener noreferrer" 
+             class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-brand-success hover:bg-green-700 text-white font-extrabold text-sm shadow-whatsapp hover:scale-[1.01] active:scale-95 transition-all">
+            <i class="fa-brands fa-whatsapp text-lg"></i>
+            <span>Consultar por WhatsApp con este Presupuesto</span>
+          </a>
+          <span class="block text-brand-textMuted text-[11px] mt-3 font-mono">
+            * Los precios finales se definen de mutuo acuerdo según la complejidad real del diseño.
+          </span>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- -->
+  <!-- MARCO ACADÉMICO: MODELO LEAN CANVAS -->
+  <section id="canvas" class="py-16 md:py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Encabezado de Sección -->
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-brand-primary font-bold text-xs uppercase tracking-widest block mb-2">Estructura del Proyecto Escolar</span>
+        <h2 class="font-display font-bold text-3xl sm:text-4xl text-brand-textMain tracking-tight">
+          Modelo de Negocio: Lean Canvas
+        </h2>
+        <div class="w-16 h-1 bg-brand-primary mx-auto mt-4 rounded-full"></div>
+        <p class="text-brand-textMuted text-sm sm:text-base mt-4">
+          La base de planificación del emprendimiento "ModelandoIdeas" para validar la sostenibilidad en Moquegua.
+        </p>
+      </div>
+
+      <!-- Cuadrícula interactiva de Lean Canvas -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        
+        <!-- Bloque 1: Problema -->
+        <div class="lg:col-span-2 bg-brand-bgLight border border-brand-borderLight p-6 rounded-2xl flex flex-col justify-between">
+          <div>
+            <span class="text-[10px] font-mono uppercase text-brand-secondary font-bold tracking-wider">01. Problema</span>
+            <h4 class="font-display font-bold text-sm text-brand-textMain mt-1 mb-3">La Carencia Local</h4>
+            <p class="text-brand-textMuted text-xs leading-relaxed">
+              Los pequeños emprendedores y estudiantes de Moquegua carecen de conocimientos técnicos y herramientas de software para digitalizar bocetos en modelos 3D y mejorar su publicidad comercial.
+            </p>
+          </div>
+          <span class="text-[10px] font-mono text-brand-textMuted mt-4 block border-t border-brand-borderLight/60 pt-2 font-semibold">
+            Alternativas existentes: Servicios profesionales de alto costo.
+          </span>
+        </div>
+
+        <!-- Bloque 2: Solución -->
+        <div class="lg:col-span-2 bg-brand-bgLight border border-brand-borderLight p-6 rounded-2xl flex flex-col justify-between">
+          <div>
+            <span class="text-[10px] font-mono uppercase text-brand-primary font-bold tracking-wider">02. Solución</span>
+            <h4 class="font-display font-bold text-sm text-brand-textMain mt-1 mb-3">Alternativas Propuestas</h4>
+            <ul class="text-brand-textMuted text-xs space-y-2 list-disc pl-4 leading-relaxed">
+              <li>Diseño 3D personalizado de logos comerciales y empaques.</li>
+              <li>Reconstrucción digital de manualidades para catálogos.</li>
+              <li>Modelado de objetos de escritorio funcionales a medida.</li>
+            </ul>
+          </div>
+          <span class="text-[10px] font-mono text-brand-textMuted mt-4 block border-t border-brand-borderLight/60 pt-2 font-semibold">
+            Enfoque digital flexible sin impresión física.
+          </span>
+        </div>
+
+        <!-- Bloque 3: Propuesta de Valor -->
+        <div class="bg-brand-primary/5 border border-brand-primary/20 p-6 rounded-2xl flex flex-col justify-between lg:row-span-2">
+          <div>
+            <span class="text-[10px] font-mono uppercase text-brand-primary font-bold tracking-wider">03. Propuesta de Valor</span>
+            <h4 class="font-display font-bold text-sm text-brand-textMain mt-1 mb-3">Nuestra Esencia</h4>
+            <p class="text-brand-textMuted text-xs leading-relaxed">
+              "Transformamos tus bocetos, dibujos y manualidades en modelos digitales 3D profesionales, listos para publicidad, catálogos y accesorios, de forma rápida, económica y optimizada para ver desde tu celular."
+            </p>
+          </div>
+          <div class="mt-4 pt-2 border-t border-brand-borderLight">
+            <span class="text-[9px] font-mono block text-brand-primary uppercase font-bold">Mantra</span>
+            <span class="text-xs font-semibold text-brand-textMain font-display">"De la idea a lo real"</span>
+          </div>
+        </div>
+
+        <!-- Bloque 4: Ventaja Injusta -->
+        <div class="lg:col-span-2 bg-brand-bgLight border border-brand-borderLight p-6 rounded-2xl flex flex-col justify-between">
+          <div>
+            <span class="text-[10px] font-mono uppercase text-brand-secondary font-bold tracking-wider">04. Ventaja Injusta</span>
+            <h4 class="font-display font-bold text-sm text-brand-textMain mt-1 mb-3">Nuestro Enfoque Único</h4>
+            <p class="text-brand-textMuted text-xs leading-relaxed">
+              Servicio unificado 100% digital y flexible que no requiere inversión en manufactura física o impresoras 3D, lo que permite ofrecer entregas express en menos de 48 horas adaptadas a la economía de Moquegua.
+            </p>
+          </div>
+          <span class="text-[10px] font-mono text-brand-textMuted mt-4 block border-t border-brand-borderLight/60 pt-2 font-semibold">
+            Modelo ágil, rápido y de bajo costo.
+          </span>
+        </div>
+
+        <!-- Bloque 5: Canales -->
+        <div class="lg:col-span-2 bg-brand-bgLight border border-brand-borderLight p-6 rounded-2xl flex flex-col justify-between">
+          <div>
+            <span class="text-[10px] font-mono uppercase text-brand-primary font-bold tracking-wider">05. Canales de Distribución</span>
+            <h4 class="font-display font-bold text-sm text-brand-textMain mt-1 mb-3">Cómo llegamos a ti</h4>
+            <p class="text-brand-textMuted text-xs leading-relaxed">
+              Canales principales: Comunicación directa en la Institución Educativa, recomendación boca a boca de clientes satisfechos, e interacciones ágiles mediante WhatsApp Business e historias de Instagram. Envíos directos de archivos por Google Drive.
+            </p>
+          </div>
+          <span class="text-[10px] font-mono text-brand-textMuted mt-4 block border-t border-brand-borderLight/60 pt-2 font-semibold">
+            Entrega instantánea en archivos livianos.
+          </span>
+        </div>
+
+        <!-- Bloque 6: Segmento de Clientes -->
+        <div class="lg:col-span-2 bg-brand-bgLight border border-brand-borderLight p-6 rounded-2xl flex flex-col justify-between">
+          <div>
+            <span class="text-[10px] font-mono uppercase text-brand-secondary font-bold tracking-wider">06. Segmento de Clientes</span>
+            <h4 class="font-display font-bold text-sm text-brand-textMain mt-1 mb-3">Público Objetivo</h4>
+            <p class="text-brand-textMuted text-xs leading-relaxed">
+              Pequeños comerciantes, artesanos, creadores de manualidades físicas, estudiantes de nivel secundaria/superior y jóvenes emprendedores de Moquegua que comercializan sus productos en redes sociales.
+            </p>
+          </div>
+          <span class="text-[10px] font-mono text-brand-textMuted mt-4 block border-t border-brand-borderLight/60 pt-2 font-semibold font-bold text-brand-secondary">
+            Early Adopters: Microcomerciantes de nuestro entorno.
+          </span>
+        </div>
+
+        <!-- Bloque 7: Métricas Clave -->
+        <div class="lg:col-span-2 bg-brand-bgLight border border-brand-borderLight p-6 rounded-2xl flex flex-col justify-between">
+          <div>
+            <span class="text-[10px] font-mono uppercase text-brand-primary font-bold tracking-wider">07. Métricas Clave</span>
+            <h4 class="font-display font-bold text-sm text-brand-textMain mt-1 mb-3">Control de Operaciones</h4>
+            <ul class="text-brand-textMuted text-xs space-y-1.5 list-disc pl-4 leading-relaxed">
+              <li><strong>Adquisición:</strong> Nuevos clientes o consultas por WhatsApp a la semana.</li>
+              <li><strong>Retención:</strong> % de diseños aprobados sin exigir más de 2 correcciones.</li>
+              <li><strong>Conversión:</strong> Tiempo desde recepción de boceto a entrega (Meta: &lt; 48 hrs).</li>
+            </ul>
+          </div>
+          <span class="text-[10px] font-mono text-brand-textMuted mt-4 block border-t border-brand-borderLight/60 pt-2 font-semibold">
+            Calidad, velocidad y eficiencia.
+          </span>
+        </div>
+
+        <!-- Bloque 8: Estructura de Costos -->
+        <div class="lg:col-span-2 bg-brand-bgLight border border-brand-borderLight p-6 rounded-2xl flex flex-col justify-between">
+          <div>
+            <span class="text-[10px] font-mono uppercase text-brand-secondary font-bold tracking-wider">08. Estructura de Costos</span>
+            <h4 class="font-display font-bold text-sm text-brand-textMain mt-1 mb-3">Costos de Operación</h4>
+            <p class="text-brand-textMuted text-xs leading-relaxed">
+              Costos fijos mensuales aproximados de S/. 50.00 (Internet prorrateado y consumo de energía). Costos variables de S/. 15.00 en publicidad básica y afiches. Costo total estimado: S/. 65.00. Punto de equilibrio: 4 modelos al mes.
+            </p>
+          </div>
+          <span class="text-[10px] font-mono text-brand-textMuted mt-4 block border-t border-brand-borderLight/60 pt-2 font-semibold text-brand-primary">
+            Apoyado al 100% en Software Open Source.
+          </span>
+        </div>
+
+        <!-- Bloque 9: Flujo de Ingresos -->
+        <div class="lg:col-span-3 bg-brand-bgLight border border-brand-borderLight p-6 rounded-2xl flex flex-col justify-between">
+          <div>
+            <span class="text-[10px] font-mono uppercase text-brand-primary font-bold tracking-wider">09. Flujo de Ingresos</span>
+            <h4 class="font-display font-bold text-sm text-brand-textMain mt-1 mb-3">Nuestras Líneas de Ganancia</h4>
+            <p class="text-brand-textMuted text-xs leading-relaxed">
+              Cobros estructurados según dificultad del diseño: Modelado Simple (Llaveros/Accesorios) a S/. 15.00. Modelado Intermedio (Manualidades/Prototipos) a S/. 20.00. Modelado Avanzado (Logos/Envases) de S/. 25.00 a S/. 30.00. Cargos extra por color de S/. 5.00.
+            </p>
+          </div>
+          <span class="text-[10px] font-mono text-brand-textMuted mt-4 block border-t border-brand-borderLight/60 pt-2 font-semibold">
+            Comisiones por recomendación de talleres de impresión local.
+          </span>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- -->
+  <!-- SECCIÓN: INSPIRACIÓN EMPRENDEDORA LOCAL Y CANCIÓN -->
+  <section class="py-16 bg-brand-bgLight border-y border-brand-borderLight">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        
+        <!-- Nuestra Inspiración Local -->
+        <div class="bg-white p-8 rounded-3xl border border-brand-borderLight shadow-premium flex flex-col justify-between h-full">
+          <div>
+            <span class="text-brand-secondary font-bold text-xs uppercase tracking-widest block mb-2">Inspiración Regional</span>
+            <h3 class="font-display font-bold text-2xl text-brand-textMain mb-4">Emprendimiento en Moquegua</h3>
+            <p class="text-brand-textMuted text-sm leading-relaxed mb-4">
+              Hemos elegido como referente comercial local a la emprendedora:
+            </p>
+            <div class="p-5 rounded-2xl bg-brand-bgLight border-l-4 border-brand-secondary">
+              <strong class="block text-brand-textMain text-sm mb-1">Maritza Huanca Quispe</strong>
+              <p class="text-brand-textMuted text-xs leading-relaxed">
+                "Se escogió a esta emprendedora porque representa el esfuerzo de los pequeños comerciantes de Moquegua. Empezó haciendo manualidades sencillas y supo adaptarse a las necesidades de la gente mediante la publicidad en redes sociales usando anuncios con modelos 3D como referencia de sus manualidades. Su perseverancia nos inspira a ofrecer un servicio digital que apoye a personas como ella."
+              </p>
+            </div>
+          </div>
+          <div class="mt-6 pt-4 border-t border-brand-borderLight flex items-center gap-2 text-xs text-brand-textMuted">
+            <i class="fa-solid fa-medal text-brand-secondary"></i>
+            <span>Dedicado a los pequeños comerciantes de nuestra comunidad.</span>
+          </div>
+        </div>
+
+        <!-- Nuestro Himno de Esfuerzo (The Script) -->
+        <div class="bg-white p-8 rounded-3xl border border-brand-borderLight shadow-premium flex flex-col justify-between h-full">
+          <div>
+            <span class="text-brand-primary font-bold text-xs uppercase tracking-widest block mb-2">Canción Representativa</span>
+            <h3 class="font-display font-bold text-2xl text-brand-textMain mb-4">Música para el Esfuerzo</h3>
+            <p class="text-brand-textMuted text-sm leading-relaxed mb-6">
+              Escogimos una canción motivadora que representa nuestro empuje tecnológico y el deseo de llevar tu marca a la cima de su potencial visual.
+            </p>
+            
+            <!-- Caja de Reproductor/Video simulado -->
+            <div class="p-6 rounded-2xl bg-brand-bgLight border border-brand-borderLight text-center">
+              <span class="text-[10px] font-mono uppercase tracking-wider text-brand-textMuted block mb-1">CANCION DE EQUIPO</span>
+              <strong class="block text-brand-textMain text-base font-display">Hall of Fame - The Script</strong>
+              <p class="text-brand-textMuted text-xs mt-1 mb-4">"You can be the hero, you can get the gold..."</p>
+              
+              <a href="https://www.youtube.com/watch?v=mk48xRzuNvA" 
+                 target="_blank" rel="noopener noreferrer" 
+                 class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-brand-primary hover:bg-brand-primaryHover text-white text-xs font-bold transition-all shadow-btn hover:scale-105">
+                <i class="fa-solid fa-play"></i>
+                <span>Escuchar en YouTube</span>
+              </a>
+            </div>
+          </div>
+          <div class="mt-6 pt-4 border-t border-brand-borderLight flex items-center gap-2 text-xs text-brand-textMuted">
+            <i class="fa-solid fa-music text-brand-primary"></i>
+            <span>Banda sonora oficial de Modeladores de Ideas.</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- -->
+  <!-- SECCIÓN DE PREGUNTAS FRECUENTES (FAQ) -->
+  <section class="py-16 md:py-20 bg-white border-b border-brand-borderLight">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6">
+      
+      <!-- Encabezado de Sección -->
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-brand-primary font-bold text-xs uppercase tracking-widest block mb-2">Preguntas Frecuentes</span>
+        <h2 class="font-display font-bold text-3xl sm:text-4xl text-brand-textMain tracking-tight">
+          Resolviendo tus Dudas
+        </h2>
+        <div class="w-16 h-1 bg-brand-primary mx-auto mt-4 rounded-full"></div>
+      </div>
+
+      <!-- Acordeón de FAQ -->
+      <div class="space-y-4">
+        <!-- Item 1 -->
+        <div class="border border-brand-borderLight rounded-2xl overflow-hidden bg-brand-bgLight">
+          <button onclick="toggleAccordion(1)" class="w-full px-6 py-5 text-left flex items-center justify-between text-brand-textMain font-bold text-sm sm:text-base focus:outline-none hover:bg-brand-borderLight/35 transition-all">
+            <span>¿En qué formatos digitales me entregan el diseño final?</span>
+            <span id="accordion-icon-1" class="text-brand-primary transition-transform duration-300"><i class="fa-solid fa-chevron-down text-xs"></i></span>
+          </button>
+          <div id="accordion-content-1" class="hidden px-6 pb-5 text-brand-textMuted text-xs sm:text-sm leading-relaxed border-t border-brand-borderLight/40 pt-4">
+            Te entregamos renders fotorrealistas de alta definición listos para usar en tus anuncios de redes sociales (formato PNG/JPG). Si requieres el archivo 3D editable para visualización de celular o PC, te lo entregamos en formato OBJ, GLTF o FBX sin costo adicional.
+          </div>
+        </div>
+
+        <!-- Item 2 -->
+        <div class="border border-brand-borderLight rounded-2xl overflow-hidden bg-brand-bgLight">
+          <button onclick="toggleAccordion(2)" class="w-full px-6 py-5 text-left flex items-center justify-between text-brand-textMain font-bold text-sm sm:text-base focus:outline-none hover:bg-brand-borderLight/35 transition-all">
+            <span>¿Hacen impresiones físicas en plástico 3D?</span>
+            <span id="accordion-icon-2" class="text-brand-primary transition-transform duration-300"><i class="fa-solid fa-chevron-down text-xs"></i></span>
+          </button>
+          <div id="accordion-content-2" class="hidden px-6 pb-5 text-brand-textMuted text-xs sm:text-sm leading-relaxed border-t border-brand-borderLight/40 pt-4">
+            Nuestro servicio es 100% digital e interactivo para mantener costos bajos y accesibles para todos. No obstante, si necesitas la pieza impresa físicamente, podemos gestionarte y contactarte con talleres aliados locales en Moquegua encargados del modelado de extrusión de plástico.
+          </div>
+        </div>
+
+        <!-- Item 3 -->
+        <div class="border border-brand-borderLight rounded-2xl overflow-hidden bg-brand-bgLight">
+          <button onclick="toggleAccordion(3)" class="w-full px-6 py-5 text-left flex items-center justify-between text-brand-textMain font-bold text-sm sm:text-base focus:outline-none hover:bg-brand-borderLight/35 transition-all">
+            <span>¿Qué tipo de referencias debo enviarles?</span>
+            <span id="accordion-icon-3" class="text-brand-primary transition-transform duration-300"><i class="fa-solid fa-chevron-down text-xs"></i></span>
+          </button>
+          <div id="accordion-content-3" class="hidden px-6 pb-5 text-brand-textMuted text-xs sm:text-sm leading-relaxed border-t border-brand-borderLight/40 pt-4">
+            ¡Cualquier tipo de boceto o idea! Puedes tomárle una foto a un dibujo a lápiz, enviarnos planos simples, fotos de productos similares descargados de internet, o simplemente explicarnos lo que buscas por medio de un audio y texto por WhatsApp.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PIE DE PÁGINA (CREDITOS EDUCATIVOS Y DEL PROYECTO) -->
+  <footer class="bg-brand-bgLight border-t border-brand-borderLight pt-16 pb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Detalle superior de Branding de Moquegua -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pb-12 border-b border-brand-borderLight">
+        <div>
+          <a href="#inicio" class="flex items-center gap-3 mb-5 group">
+            <img src="https://raw.githubusercontent.com/ImposibleALX/site/main/logo.png" 
+                 alt="Logo de ModelandoIdeas" 
+                 class="h-9 w-auto object-contain"
+                 onerror="this.src='https://placehold.co/40x40/2563eb/ffffff?text=MI'">
+            <span class="font-display font-bold text-lg text-brand-textMain leading-none">
+              Modelando<span class="text-brand-secondary">Ideas</span>
+            </span>
+          </a>
+          <p class="text-brand-textMuted text-xs sm:text-sm max-w-sm leading-relaxed">
+            Servicio dedicado a dar vida visual a tus ideas escolares, universitarias o comerciales mediante renders y estructuras 3D lógicas.
+          </p>
+          <div class="inline-flex items-center gap-2 text-[10px] text-brand-textMuted font-mono bg-white border border-brand-borderLight px-3 py-1.5 rounded-xl mt-4">
+            <i class="fa-solid fa-location-dot text-brand-primary"></i>
+            <span>Desarrollado en Moquegua, Perú</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col md:items-end justify-center">
+          <strong class="text-[11px] font-bold text-brand-primary uppercase tracking-widest mb-3">ACCESO RÁPIDO</strong>
+          <nav class="flex flex-wrap gap-x-6 gap-y-2 justify-start md:justify-end">
+            <a href="#propuesta" class="text-brand-textMuted hover:text-brand-primary text-xs font-semibold transition-colors">Propuesta</a>
+            <a href="#soluciones" class="text-brand-textMuted hover:text-brand-primary text-xs font-semibold transition-colors">Soluciones 3D</a>
+            <a href="#visor-3d" class="text-brand-textMuted hover:text-brand-primary text-xs font-semibold transition-colors">Visor CAD</a>
+            <a href="#cotizador" class="text-brand-textMuted hover:text-brand-primary text-xs font-semibold transition-colors">Cotizador</a>
+            <a href="#canvas" class="text-brand-textMuted hover:text-brand-primary text-xs font-semibold transition-colors">Lean Canvas</a>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Tarjeta de Créditos de la Institución Educativa (Indispensable para EPT) -->
+      <div class="pt-10">
+        <div class="bg-white border border-brand-borderLight max-w-4xl mx-auto p-6 rounded-2xl shadow-premium text-center">
+          <span class="inline-flex items-center gap-1.5 text-brand-secondary font-bold text-xs uppercase tracking-wider mb-2 font-display">
+            <i class="fa-solid fa-graduation-cap text-base"></i> Proyecto de Emprendimiento Escolar EPT
+          </span>
+          <h4 class="text-brand-textMain font-extrabold text-base mb-1 font-display">
+            I.E.T. Coronel Manuel C. de la Torre
+          </h4>
+          <p class="text-brand-textMuted text-xs">
+            Moquegua, Perú — Ciclo Tecnológico
+          </p>
+          
+          <hr class="border-brand-borderLight/60 my-4">
+          
+          <!-- Alumnos y Docente -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs text-left max-w-2xl mx-auto">
+            <div class="p-3 bg-brand-bgLight rounded-xl border border-brand-borderLight">
+              <span class="text-brand-primary uppercase font-bold text-[10px] tracking-wider block mb-1">Estudiantes Diseñadores</span>
+              <ul class="space-y-0.5 text-brand-textMain font-semibold">
+                <li><i class="fa-solid fa-user-pen mr-1 text-[10px] text-brand-textMuted"></i> Alexis Leandro Puma Mamani</li>
+                <li><i class="fa-solid fa-user-pen mr-1 text-[10px] text-brand-textMuted"></i> Axel David Apaza Flores</li>
+              </ul>
+            </div>
+            <div class="p-3 bg-brand-bgLight rounded-xl border border-brand-borderLight">
+              <span class="text-brand-secondary uppercase font-bold text-[10px] tracking-wider block mb-1">Docente Asesor EPT</span>
+              <p class="text-brand-textMain font-semibold">
+                <i class="fa-solid fa-user-tie mr-1 text-brand-textMuted"></i> Prof. Jaime Fernandez Chipana
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-center text-brand-textMuted text-[11px] mt-8">
+          © 2026 ModelandoIdeas. Todos los derechos reservados. El diseño de este sitio representa un esfuerzo tecnológico de innovación educativa en Moquegua.
+        </p>
+      </div>
+
     </div>
   </footer>
 
-  <a class="floating-whatsapp" href="https://wa.me/51993190939?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20el%20servicio%203D." target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp al +51 993 190 939">
-    <i class="fa-brands fa-whatsapp"></i>
-    <span>WhatsApp: +51 993 190 939</span>
+  <!-- BOTÓN FLOTANTE WHATSAPP (SIEMPRE DISPONIBLE PARA CONVERSION DE CLIENTES) -->
+  <a href="https://wa.me/51993190939?text=Hola%20ModelandoIdeas%2C%20vengo%20de%20la%20p%C3%A1gina%20web%20y%20quiero%20cotizar%20un%20proyecto." 
+     target="_blank" rel="noopener noreferrer" 
+     class="fixed bottom-6 right-6 z-50 flex items-center justify-center gap-2 px-5 py-3.5 rounded-full bg-brand-success text-white font-extrabold text-sm shadow-whatsapp hover:scale-105 active:scale-95 transition-all duration-300" 
+     aria-label="Contacto directo por WhatsApp de ModelandoIdeas">
+    <i class="fa-brands fa-whatsapp text-lg"></i>
+    <span class="hidden sm:inline">WhatsApp: +51 993 190 939</span>
   </a>
 
+  <!-- INTERACCIONES Y LÓGICA DE JAVASCRIPT -->
+  <script>
+    // Toggle Menú Móvil
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = document.getElementById('menu-icon');
+
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+      if (mobileMenu.classList.contains('hidden')) {
+        menuIcon.className = 'fa-solid fa-bars text-xl';
+      } else {
+        menuIcon.className = 'fa-solid fa-xmark text-xl';
+      }
+    });
+
+    // Cerrar menú al hacer clic en un enlace de navegación móvil
+    const mobileLinks = mobileMenu.querySelectorAll('a');
+    mobileLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+        menuIcon.className = 'fa-solid fa-bars text-xl';
+      });
+    });
+
+    // Lógica del Visor Interactivo (Hotspots)
+    function toggleHotspot(id) {
+      const tooltips = [1, 2];
+      tooltips.forEach(num => {
+        const t = document.getElementById(`tooltip-${num}`);
+        if (num === id) {
+          t.classList.toggle('hidden');
+        } else {
+          t.classList.add('hidden');
+        }
+      });
+    }
+
+    // Lógica del Cotizador Interactiva de Precios Reales
+    function actualizarCotizacion() {
+      const typeSelect = document.getElementById('calc-type');
+      const addSelect = document.getElementById('calc-add');
+      const priceOutput = document.getElementById('price-output');
+      const whatsappCalcLink = document.getElementById('whatsapp-calc-link');
+
+      const complexityVal = typeSelect.value;
+      const addVal = addSelect.value;
+
+      let basePrice = 15;
+      let complexityName = "Simple (Llaveros/Accesorios)";
+      let addText = "No requiere texturas complejas";
+      let textPrice = 0;
+
+      // Calcular Base
+      if (complexityVal === 'intermedio') {
+        basePrice = 20;
+        complexityName = "Intermedio (Prototipos/Manualidades)";
+      } else if (complexityVal === 'avanzado') {
+        basePrice = 25;
+        complexityName = "Avanzado (Logos/Envases)";
+      }
+
+      // Calcular Texturas Extra
+      if (addVal === 'si') {
+        basePrice += 5;
+        addText = "Con variaciones de color y texturas personalizadas";
+      }
+
+      // Actualizar Texto del Precio en el DOM
+      priceOutput.textContent = basePrice.toFixed(2);
+
+      // Crear plantilla de mensaje dinámico para WhatsApp
+      const rawMsg = `¡Hola ModelandoIdeas! Estuve cotizando mi proyecto 3D desde su página web y me gustaría iniciar con los siguientes parámetros:\n\n` +
+                     `* Nivel de Complejidad: ${complexityName}\n` +
+                     `* Detalle de Textura: ${addText}\n` +
+                     `* Costo Estimado: S/. ${basePrice.toFixed(2)}\n\n` +
+                     `¿Me podrían indicar los requerimientos para empezar a modelar mi idea?`;
+
+      whatsappCalcLink.href = `https://wa.me/51993190939?text=${encodeURIComponent(rawMsg)}`;
+    }
+
+    // Toggle de Preguntas Frecuentes (Acordeón)
+    function toggleAccordion(id) {
+      const content = document.getElementById(`accordion-content-${id}`);
+      const icon = document.getElementById(`accordion-icon-${id}`);
+
+      // Toggle actual
+      content.classList.toggle('hidden');
+      icon.classList.toggle('rotate-180');
+
+      // Cerrar los otros
+      for (let i = 1; i <= 3; i++) {
+        if (i !== id) {
+          document.getElementById(`accordion-content-${i}`).classList.add('hidden');
+          document.getElementById(`accordion-icon-${i}`).classList.remove('rotate-180');
+        }
+      }
+    }
+
+    // Iniciar cálculo por defecto en carga de página
+    window.onload = function() {
+      actualizarCotizacion();
+    };
+  </script>
 </body>
 </html>
