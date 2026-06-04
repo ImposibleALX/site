@@ -3,32 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ModelandoIdeas | De la idea a lo real</title>
-    <!-- Google Fonts: Poppins -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>ModelandoIdeas | Agencia de Diseño 3D</title>
+    <!-- Google Fonts: Inter y Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #1A1A2E; /* Azul noche profundo */
-            --secondary-color: #16213E; /* Azul oscuro */
-            --accent-color: #E94560; /* Rojo/Rosa vibrante */
-            --text-light: #F4F4F9;
-            --text-dark: #333;
+            --bg-color: #0f172a;
+            --bg-secondary: #1e293b;
+            --text-light: #f8fafc;
+            --text-muted: #cbd5e1;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #8b5cf6;
             --whatsapp-color: #25D366;
+            --glass-bg: rgba(15, 23, 42, 0.85);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
             scroll-behavior: smooth;
         }
 
+        html {
+            scroll-padding-top: 80px;
+        }
+
         body {
-            background-color: #f9f9fc;
-            color: var(--text-dark);
+            background-color: var(--bg-color);
+            color: var(--text-light);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, .logo {
+            font-family: 'Poppins', sans-serif;
         }
 
         .container {
@@ -37,243 +49,383 @@
             margin: auto;
         }
 
-        /* --- Header --- */
+        /* --- Header & Glassmorphism --- */
         header {
-            background-color: var(--primary-color);
-            padding: 1rem 5%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 1.2rem 5%;
             position: fixed;
             width: 100%;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: all 0.3s ease;
         }
 
         .logo {
             color: var(--text-light);
-            font-size: 1.6rem;
-            font-weight: 700;
+            font-size: 1.8rem;
+            font-weight: 800;
             text-decoration: none;
+            letter-spacing: -0.5px;
         }
-        .logo span { color: var(--accent-color); }
+
+        .logo span {
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
         nav ul {
             list-style: none;
             display: flex;
-            gap: 25px;
+            gap: 30px;
         }
+
         nav ul li a {
-            color: var(--text-light);
+            color: var(--text-muted);
             text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
             transition: color 0.3s;
         }
-        nav ul li a:hover { color: var(--accent-color); }
 
-        /* --- Hero Section --- */
-        .hero {
-            height: 100vh;
-            background: linear-gradient(rgba(26, 26, 46, 0.85), rgba(22, 33, 62, 0.95)), url('https://i.ibb.co/6Pz3f8m/process-image.jpg') center/cover no-repeat;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            color: var(--text-light);
-            padding: 0 20px;
+        nav ul li a:hover {
+            color: var(--accent-primary);
         }
-        .hero h1 { font-size: 3.8rem; margin-bottom: 10px; line-height: 1.2; }
-        .hero h2 { font-size: 1.5rem; font-weight: 300; margin-bottom: 25px; font-style: italic; }
-        .hero p { max-width: 700px; margin-bottom: 35px; line-height: 1.7; }
+
+        /* --- Buttons --- */
         .btn {
-            padding: 15px 35px;
-            font-size: 1.1rem;
+            padding: 14px 32px;
+            font-size: 1rem;
             font-weight: 600;
             border-radius: 50px;
             text-decoration: none;
-            transition: all 0.3s;
-            display: inline-block;
-        }
-        .btn-accent {
-            background-color: var(--accent-color);
-            color: var(--text-light);
-            box-shadow: 0 4px 20px rgba(233, 69, 96, 0.4);
-        }
-        .btn-accent:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(233, 69, 96, 0.6);
-        }
-
-        /* --- Generic Section Styling --- */
-        .section { padding: 100px 0; }
-        .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            color: var(--primary-color);
-        }
-        .section-subtitle {
-            text-align: center;
-            font-size: 1.1rem;
-            color: #666;
-            margin-bottom: 60px;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        /* --- Why Us Section --- */
-        #benefits { background-color: #fff; }
-        .benefits-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            text-align: center;
-        }
-        .benefit-card {
-            padding: 30px;
-        }
-        .benefit-card i {
-            font-size: 3rem;
-            color: var(--accent-color);
-            margin-bottom: 15px;
-        }
-        .benefit-card h3 { font-size: 1.3rem; margin-bottom: 10px; }
-
-        /* --- Process Section --- */
-        .process-timeline {
-            position: relative;
-            max-width: 1000px;
-            margin: auto;
-        }
-        .process-timeline::after {
-            content: '';
-            position: absolute;
-            width: 3px;
-            background-color: var(--accent-color);
-            top: 0;
-            bottom: 0;
-            left: 50%;
-            margin-left: -1.5px;
-        }
-        .timeline-item {
-            padding: 10px 40px;
-            position: relative;
-            width: 50%;
-        }
-        .timeline-item.left { left: 0; }
-        .timeline-item.right { left: 50%; }
-        .timeline-item::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            right: -10px;
-            background-color: white;
-            border: 4px solid var(--accent-color);
-            top: 25px;
-            border-radius: 50%;
-            z-index: 1;
-        }
-        .right::after { left: -10px; }
-        .timeline-content {
-            padding: 20px 30px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        }
-         .timeline-content i { color: var(--accent-color); margin-right: 10px; }
-
-        /* --- Showcase Section --- */
-        #showcase { background-color: var(--secondary-color); color: var(--text-light); }
-        #showcase .section-title, #showcase .section-subtitle { color: var(--text-light); }
-        .showcase-content {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 50px;
-            flex-wrap: wrap;
-        }
-        .showcase-image {
-            flex: 1;
-            max-width: 500px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        /* --- Call to Action Section --- */
-        .cta {
-            background: linear-gradient(45deg, var(--accent-color), #f76c82);
-            padding: 80px 0;
-            text-align: center;
-            color: white;
-        }
-        .cta h2 { font-size: 2.8rem; margin-bottom: 20px; }
-        .cta p { font-size: 1.2rem; margin-bottom: 30px; }
-        .btn-light {
-            background-color: var(--text-light);
-            color: var(--accent-color);
-        }
-        .btn-light:hover {
-            background-color: #fff;
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-        }
-        
-        /* --- Contact --- */
-        .whatsapp-container {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-top: 30px;
-        }
-        .btn-whatsapp {
-            background-color: var(--whatsapp-color);
-            color: white;
-            padding: 15px 30px;
-            border-radius: 50px;
-            font-size: 1.2rem;
-            text-decoration: none;
+            transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
-            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
         }
-        .btn-whatsapp:hover {
-            transform: scale(1.05);
-            background-color: #20b858;
+
+        .btn-gradient {
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+            color: #fff;
+            box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.5);
+            border: none;
         }
-        
-        /* --- Footer --- */
-        footer {
-            background-color: var(--primary-color);
-            color: #ccc;
+
+        .btn-gradient:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px -5px rgba(59, 130, 246, 0.7);
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 120px 0 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: var(--accent-secondary);
+            filter: blur(150px);
+            opacity: 0.15;
+            top: -100px;
+            left: -200px;
+            z-index: -1;
+            border-radius: 50%;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .hero-text h1 span {
+            color: var(--accent-primary);
+        }
+
+        .hero-text p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 35px;
+            max-width: 90%;
+        }
+
+        .hero-image img {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* --- Global Sections --- */
+        .section {
+            padding: 100px 0;
+            position: relative;
+        }
+
+        .section-header {
             text-align: center;
-            padding: 40px 0;
+            margin-bottom: 60px;
         }
-        footer .logo { font-size: 1.8rem; margin-bottom: 15px; display: block; }
-        footer p { margin-bottom: 10px; }
-        footer .footer-info {
-            border-top: 1px solid #333;
-            padding-top: 20px;
-            margin-top: 20px;
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* --- Benefits --- */
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .benefit-card {
+            background: var(--bg-secondary);
+            padding: 40px 30px;
+            border-radius: 20px;
+            text-align: left;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .benefit-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-primary);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .benefit-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+
+        .benefit-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* --- Process Timeline --- */
+        #process {
+            background: var(--bg-secondary);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            counter-reset: process-counter;
+        }
+
+        .process-step {
+            background: var(--bg-color);
+            padding: 40px 30px;
+            border-radius: 20px;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .process-step::before {
+            counter-increment: process-counter;
+            content: "0" counter(process-counter);
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 3rem;
+            font-weight: 800;
+            color: rgba(255,255,255,0.03);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .process-step h4 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-light);
+        }
+
+        .process-step h4 i {
+            color: var(--accent-secondary);
+        }
+
+        .process-step p {
+            color: var(--text-muted);
             font-size: 0.9rem;
         }
 
-        /* Responsive Design */
-        @media screen and (max-width: 768px) {
-            nav ul { display: none; } /* Simplificado para prototipo */
-            .hero h1 { font-size: 2.8rem; }
-            .process-timeline::after { left: 10px; }
-            .timeline-item { width: 100%; padding-left: 40px; padding-right: 0px; }
-            .timeline-item.right { left: 0%; }
-            .timeline-item::after { left: 1px; }
+        /* --- Portfolio/Showcase --- */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
         }
 
+        .portfolio-item {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            group: hover;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .portfolio-item img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .portfolio-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .portfolio-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 30px 20px 20px;
+            background: linear-gradient(to top, rgba(15, 23, 42, 0.95), transparent);
+            color: white;
+        }
+
+        .portfolio-overlay h3 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        /* --- CTA --- */
+        .cta-section {
+            background: linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)), url('https://images.unsplash.com/photo-1618365908648-e71bd5716cba?auto=format&fit=crop&w=1920&q=80') center/cover fixed;
+            text-align: center;
+            padding: 100px 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .cta-section h2 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        /* --- Contact --- */
+        .whatsapp-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .btn-whatsapp {
+            background-color: var(--whatsapp-color);
+            color: #fff;
+            padding: 16px 35px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px -5px rgba(37, 211, 102, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn-whatsapp:hover {
+            transform: translateY(-3px) scale(1.02);
+            background-color: #20b858;
+            box-shadow: 0 15px 30px -5px rgba(37, 211, 102, 0.6);
+        }
+
+        /* --- Footer --- */
+        footer {
+            background: #0b1120;
+            padding: 60px 0 30px;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        footer .logo {
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .footer-content {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 20px;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        /* --- Responsive --- */
+        @media screen and (max-width: 992px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .hero-text p {
+                margin: 0 auto 30px;
+            }
+            nav ul {
+                display: none;
+            }
+            .hero-text h1 {
+                font-size: 2.8rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -284,72 +436,79 @@
             <ul>
                 <li><a href="#benefits">Beneficios</a></li>
                 <li><a href="#process">Proceso</a></li>
-                <li><a href="#showcase">Ejemplos</a></li>
-                <li><a href="#contact">Contáctanos</a></li>
+                <li><a href="#showcase">Portafolio</a></li>
+                <li><a href="#contact">Contacto</a></li>
             </ul>
         </nav>
+        <a href="#contact" class="btn btn-gradient" style="padding: 10px 24px; font-size: 0.9rem;">Cotizar Ahora</a>
     </header>
 
     <main>
         <!-- Hero Section -->
         <section class="hero" id="hero">
-            <h1>Transformamos tus Bocetos en Realidad Digital</h1>
-            <h2>"De la idea a lo real"</h2>
-            <p>Para emprendedores, estudiantes y creativos de Moquegua. Convertimos tus dibujos, manualidades o ideas en impactantes modelos 3D para publicidad, catálogos y accesorios funcionales. ¡Sin complicaciones y a tu alcance!</p>
-            <a href="#contact" class="btn btn-accent"><i class="fab fa-whatsapp"></i> Inicia tu Proyecto Hoy</a>
+            <div class="container hero-content">
+                <div class="hero-text">
+                    <h1>De un simple boceto a la <span>realidad digital.</span></h1>
+                    <p>Agencia especializada en Moquegua. Convertimos tus ideas, manualidades o dibujos en modelos 3D profesionales para publicidad, impresión o catálogos digitales.</p>
+                    <a href="#contact" class="btn btn-gradient"><i class="fas fa-rocket"></i> Inicia tu Proyecto</a>
+                </div>
+                <div class="hero-image">
+                    <!-- Imagen real de Unsplash de modelado 3D / Workspace -->
+                    <img src="https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=800&q=80" alt="Modelado 3D en pantalla">
+                </div>
+            </div>
         </section>
 
-        <!-- Why Choose Us? -->
+        <!-- Benefits Section -->
         <section id="benefits" class="section">
             <div class="container">
-                <h2 class="section-title">¿Por Qué Elegirnos?</h2>
-                <p class="section-subtitle">Ofrecemos un servicio pensado en las necesidades de nuestra comunidad: rápido, accesible y colaborativo.</p>
+                <div class="section-header">
+                    <h2>Por qué trabajar con nosotros</h2>
+                    <p>Diseñamos un flujo de trabajo optimizado para emprendedores, estudiantes y creativos que necesitan resultados profesionales sin complicaciones.</p>
+                </div>
                 <div class="benefits-grid">
                     <div class="benefit-card">
-                        <i class="fas fa-rocket"></i>
-                        <h3>Entrega Ultra Rápida</h3>
-                        <p>Recibe una vista previa de alta calidad en menos de 48 horas. Tu tiempo es valioso, el nuestro también.</p>
+                        <div class="benefit-icon"><i class="fas fa-stopwatch"></i></div>
+                        <h3>Entrega Acelerada</h3>
+                        <p>Recibe los primeros avances o vistas previas de alta calidad en menos de 48 horas. Tu tiempo vale oro.</p>
                     </div>
                     <div class="benefit-card">
-                        <i class="fas fa-hand-holding-usd"></i>
-                        <h3>Precios Accesibles</h3>
-                        <p>Calidad profesional sin costos elevados. Ideal para presupuestos de estudiantes y pequeños emprendedores.</p>
+                        <div class="benefit-icon"><i class="fas fa-tags"></i></div>
+                        <h3>Costos Accesibles</h3>
+                        <p>Planes diseñados para la realidad de los emprendedores y estudiantes de Moquegua, sin sacrificar calidad.</p>
                     </div>
                     <div class="benefit-card">
-                        <i class="fas fa-comments"></i>
-                        <h3>Comunicación Directa</h3>
-                        <p>Trabajamos contigo. Apruebas el diseño, solicitas correcciones y te aseguras de que el resultado sea perfecto.</p>
+                        <div class="benefit-icon"><i class="fas fa-user-edit"></i></div>
+                        <h3>Diseño Colaborativo</h3>
+                        <p>No cerramos el proyecto hasta que estés satisfecho. Revisiones y correcciones directas vía WhatsApp.</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Process Section -->
-        <section id="process" class="section" style="background-color: #f9f9fc;">
+        <section id="process" class="section">
             <div class="container">
-                <h2 class="section-title">Nuestro Proceso Creativo</h2>
-                <p class="section-subtitle">Siete sencillos pasos desde tu idea inicial hasta tu archivo 3D finalizado, listo para usar.</p>
-                <div class="process-timeline">
-                    <div class="timeline-item left">
-                        <div class="timeline-content"><h4><i class="fas fa-pencil-ruler"></i>Paso 1: Contacto e Idea</h4><p>Nos envías tu dibujo, boceto o idea detallada por WhatsApp.</p></div>
+                <div class="section-header">
+                    <h2>Nuestro Proceso de Trabajo</h2>
+                    <p>Una metodología ágil de 4 pasos para transformar tu idea en un activo digital listo para usar.</p>
+                </div>
+                <div class="process-grid">
+                    <div class="process-step">
+                        <h4><i class="fas fa-lightbulb"></i> La Idea</h4>
+                        <p>Envíanos una foto de tu dibujo, plano a mano alzada o cuéntanos tu idea conceptual.</p>
                     </div>
-                    <div class="timeline-item right">
-                        <div class="timeline-content"><h4><i class="fas fa-tasks"></i>Paso 2: Evaluación</h4><p>Nuestro equipo evalúa tu solicitud y define los parámetros del diseño.</p></div>
+                    <div class="process-step">
+                        <h4><i class="fas fa-cubes"></i> Modelado</h4>
+                        <p>Nuestro equipo digitaliza y esculpe tu diseño utilizando software profesional de vanguardia.</p>
                     </div>
-                    <div class="timeline-item left">
-                        <div class="timeline-content"><h4><i class="fas fa-laptop-code"></i>Paso 3: Modelado Digital</h4><p>Damos vida a tu idea usando software libre como Blender o FreeCAD.</p></div>
+                    <div class="process-step">
+                        <h4><i class="fas fa-search"></i> Revisión</h4>
+                        <p>Te enviamos un render fotorrealista para que apruebes las proporciones, texturas y detalles.</p>
                     </div>
-                    <div class="timeline-item right">
-                        <div class="timeline-content"><h4><i class="fas fa-paper-plane"></i>Paso 4: Vista Previa</h4><p>En menos de 48 horas, te enviamos una vista previa de alta calidad.</p></div>
-                    </div>
-                     <div class="timeline-item left">
-                        <div class="timeline-content"><h4><i class="fas fa-check-double"></i>Paso 5: Aprobación</h4><p>Apruebas el diseño o solicitas las correcciones que necesites. ¡Tu satisfacción es primero!</p></div>
-                    </div>
-                    <div class="timeline-item right">
-                        <div class="timeline-content"><h4><i class="fas fa-cogs"></i>Paso 6: Optimización</h4><p>Exportamos y optimizamos el modelo en formatos OBJ, GLTF o JPG.</p></div>
-                    </div>
-                    <div class="timeline-item left">
-                        <div class="timeline-content"><h4><i class="fas fa-download"></i>Paso 7: Entrega Final</h4><p>Recibes el archivo final, listo para tu publicidad, celular o PC.</p></div>
+                    <div class="process-step">
+                        <h4><i class="fas fa-check-circle"></i> Entrega Final</h4>
+                        <p>Recibes tus archivos optimizados (OBJ, GLTF, STL) listos para impresión 3D o marketing digital.</p>
                     </div>
                 </div>
             </div>
@@ -358,34 +517,58 @@
         <!-- Showcase Section -->
         <section id="showcase" class="section">
             <div class="container">
-                <h2 class="section-title">De un Simple Boceto a un Diseño Impactante</h2>
-                <p class="section-subtitle">Así es como tus ideas cobran vida. Imagina el potencial para tu emprendimiento o proyecto personal.</p>
-                <div class="showcase-content">
-                    <img src="https://i.ibb.co/6Pz3f8m/process-image.jpg" alt="Transformación de boceto a modelo 3D profesional" class="showcase-image">
+                <div class="section-header">
+                    <h2>Portafolio Destacado</h2>
+                    <p>Explora cómo ideas abstractas se convierten en geometría perfecta. (Imágenes de referencia)</p>
+                </div>
+                <div class="portfolio-grid">
+                    <div class="portfolio-item">
+                        <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=600&q=80" alt="Boceto Inicial">
+                        <div class="portfolio-overlay">
+                            <h3>1. De la Libreta...</h3>
+                            <p>Análisis de proporciones y boceto conceptual.</p>
+                        </div>
+                    </div>
+                    <div class="portfolio-item">
+                        <img src="https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?auto=format&fit=crop&w=600&q=80" alt="Modelado CAD">
+                        <div class="portfolio-overlay">
+                            <h3>2. Al Software CAD...</h3>
+                            <p>Estructuración geométrica del modelo.</p>
+                        </div>
+                    </div>
+                    <div class="portfolio-item">
+                        <img src="https://images.unsplash.com/photo-1618365908648-e71bd5716cba?auto=format&fit=crop&w=600&q=80" alt="Render Final">
+                        <div class="portfolio-overlay">
+                            <h3>3. Al Render Final</h3>
+                            <p>Aplicación de texturas, luces y renderizado.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
-        
+
         <!-- CTA Section -->
-        <section class="cta">
+        <section class="cta-section">
             <div class="container">
-                <h2>¿Tienes una idea esperando a ser modelada?</h2>
-                <p>No dejes que se quede en el papel. Es el momento de darle una dimensión profesional.</p>
-                <a href="#contact" class="btn btn-light">¡Sí, quiero empezar ahora!</a>
+                <h2>¿Listo para materializar tu idea?</h2>
+                <p style="color: #cbd5e1; font-size: 1.2rem; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto;">No dejes tu proyecto guardado en un cajón. Dale el salto al 3D hoy mismo y destaca frente a tu competencia.</p>
+                <a href="#contact" class="btn btn-gradient" style="font-size: 1.2rem; padding: 16px 40px;">Hablemos de tu proyecto</a>
             </div>
         </section>
 
         <!-- Contact Section -->
         <section id="contact" class="section">
             <div class="container">
-                 <h2 class="section-title">Contáctanos Directamente</h2>
-                 <p class="section-subtitle">Estamos listos para escucharte. Envíanos un mensaje por WhatsApp y recibe una cotización rápida y sin compromiso. ¡Estamos a un clic de distancia!</p>
-                 <div class="whatsapp-container">
+                <div class="section-header">
+                    <h2>Atención Inmediata y Personalizada</h2>
+                    <p>Cotiza sin compromiso. Nuestro equipo de soporte técnico y diseño está listo para asesorarte en tu próximo proyecto en Moquegua.</p>
+                </div>
+                <div class="whatsapp-buttons">
                     <a href="https://wa.me/51993190939?text=¡Hola!%20Vengo%20de%20la%20página%20web%20y%20quiero%20cotizar%20un%20proyecto%203D." target="_blank" class="btn-whatsapp">
-                        <i class="fab fa-whatsapp"></i> Contactar a Alexis Puma
+                        <i class="fab fa-whatsapp"></i> Chat con Alexis Puma
                     </a>
                     <a href="https://wa.me/51929468580?text=¡Hola!%20Vengo%20de%20la%20página%20web%20y%20quiero%20cotizar%20un%20proyecto%203D." target="_blank" class="btn-whatsapp">
-                        <i class="fab fa-whatsapp"></i> Contactar a Axel Apaza
+                        <i class="fab fa-whatsapp"></i> Chat con Axel Apaza
                     </a>
                 </div>
             </div>
@@ -395,11 +578,14 @@
     <footer>
         <div class="container">
             <a href="#hero" class="logo">Modelando<span>Ideas</span></a>
-            <p>"De la idea a lo real"</p>
-            <div class="footer-info">
-                <p><strong>Proyecto de Emprendimiento EPT</strong> | I.E.T. Coronel Manuel C. de la Torre - Moquegua</p>
-                <p><strong>Equipo:</strong> Alexis Leandro Puma Mamani & Axel David Apaza Flores | <strong>Docente Asesor:</strong> Jaime Fernandez Chipana</p>
-                <p>© 2026 ModelandoIdeas. Un proyecto hecho con pasión y tecnología.</p>
+            <div class="footer-content">
+                <p>Agencia de Modelado 3D Profesional — "De la idea a lo real"</p>
+                <p style="margin-top: 10px;">Orgullosamente desarrollado en Moquegua, Perú.</p>
+            </div>
+            <div class="footer-bottom">
+                <p><strong>Proyecto de Emprendimiento EPT</strong> | I.E.T. Coronel Manuel C. de la Torre</p>
+                <p style="margin-top: 5px;">Equipo: Alexis Leandro Puma Mamani & Axel David Apaza Flores | Docente Asesor: Jaime Fernandez Chipana</p>
+                <p style="margin-top: 15px;">© 2026 ModelandoIdeas. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>
